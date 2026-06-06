@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<meta name="theme-color" content="#b70000" />
+<title>Downham Town FC — World Cup 2026 Predictor</title>
+<meta property="og:title" content="Downham Town FC — World Cup 2026 Predictor" />
+<meta property="og:description" content="Predict the group-stage scores and send your entry on WhatsApp." />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚽</text></svg>" />
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Archivo:ital,wght@0,400;0,600;0,700;1,600&display=swap');
+:root{ --red:#b70000; --red-dk:#820000; --cream:#f6f1e7; --ink:#1c1917; }
+*{ box-sizing:border-box; }
+html,body{ margin:0; padding:0; }
+body{
+  font-family:'Archivo',system-ui,-apple-system,sans-serif; color:var(--ink);
+  background:
+    radial-gradient(circle at 12% -10%, rgba(183,0,0,.10), transparent 40%),
+    repeating-linear-gradient(0deg, transparent 0 38px, rgba(0,0,0,.018) 38px 39px),
+    var(--cream);
+  min-height:100vh;
+}
+.display{ font-family:'Anton',Impact,sans-serif; letter-spacing:.01em; text-transform:uppercase; line-height:.95; }
+.flex{ display:flex; } .ac{ align-items:center; } .jb{ justify-content:space-between; }
+.wrap{ flex-wrap:wrap; } .g8{ gap:8px; } .g6{ gap:6px; }
+.wrapw{ max-width:760px; margin:0 auto; }
+.crest{
+  width:44px;height:44px;border-radius:50%;flex:0 0 auto; cursor:pointer;
+  background:var(--red); color:#fff; display:flex;align-items:center;justify-content:center;
+  font-family:'Anton',sans-serif; font-size:13px;
+  border:3px solid #fff; box-shadow:0 0 0 2px var(--red-dk), 0 3px 8px rgba(0,0,0,.25);
+}
+#header{ background:linear-gradient(95deg,var(--red),var(--red-dk)); color:#fff; }
+.stripe{ height:6px; background:repeating-linear-gradient(135deg,var(--red) 0 14px,var(--red-dk) 14px 28px); }
+.headrow{ padding:14px 18px; display:flex; align-items:center; gap:12px; }
+.ticket{
+  background:#fff; border:1px solid #e7ddc8; border-radius:14px;
+  box-shadow:0 1px 0 #fff inset, 0 8px 22px -16px rgba(0,0,0,.4);
+  position:relative; overflow:hidden;
+}
+.ticket::before{ content:""; position:absolute; left:0; top:0; bottom:0; width:6px; background:var(--red); }
+.gbadge{ font-family:'Anton',sans-serif; background:var(--ink); color:#fff; border-radius:6px; padding:2px 7px; font-size:12px; letter-spacing:.04em; }
+.md-pill{ border:1px solid #d8cdb4; background:#faf6ed; border-radius:999px; font-size:11px; padding:2px 9px; font-weight:700; color:#6b5e44; }
+.team{ flex:1; font-weight:700; font-size:15px; }
+.home{ text-align:right; } .away{ text-align:left; }
+.flag{ font-size:20px; }
+.dash{ font-family:'Anton',sans-serif; color:var(--red); opacity:.55; }
+.scorebox{
+  width:46px;height:46px;text-align:center; font-family:'Anton',sans-serif; font-size:22px;
+  border:2px solid #d8cdb4; border-radius:10px; background:#fffdf8; color:var(--ink); -moz-appearance:textfield;
+}
+.scorebox:focus{ outline:none; border-color:var(--red); box-shadow:0 0 0 3px rgba(183,0,0,.15); }
+.scorebox::-webkit-outer-spin-button,.scorebox::-webkit-inner-spin-button{ -webkit-appearance:none; margin:0; }
+.scorebox.filled{ border-color:var(--red); background:#fff; }
+.btn{ font-weight:700; border-radius:10px; cursor:pointer; border:none; font-family:'Archivo',sans-serif; transition:transform .05s, filter .15s; }
+.btn:active{ transform:translateY(1px); }
+.btn-red{ background:var(--red); color:#fff; }
+.btn-red:hover{ filter:brightness(1.07); }
+.btn-ghost{ background:#fff; color:var(--ink); border:1px solid #d8cdb4; }
+.btn-ghost:hover{ background:#faf6ed; }
+.seg{ background:#efe7d4; border:1px solid #ddd2b8; border-radius:10px; padding:3px; display:inline-flex; gap:3px; flex-wrap:wrap; }
+.seg button{ border:none;background:transparent;border-radius:7px;padding:5px 11px;font-weight:700;font-size:13px;cursor:pointer;color:#6b5e44;font-family:'Archivo',sans-serif; }
+.seg button.on{ background:var(--red); color:#fff; }
+.field{ width:100%; border:2px solid #d8cdb4; border-radius:10px; padding:11px 13px; font-size:16px; font-family:'Archivo',sans-serif; background:#fffdf8; }
+.field:focus{ outline:none; border-color:var(--red); box-shadow:0 0 0 3px rgba(183,0,0,.15); }
+.link{ color:var(--red); font-weight:700; text-decoration:underline; cursor:pointer; background:none;border:none;font-family:'Archivo',sans-serif;font-size:inherit; }
+.muted{ color:#8a7d61; }
+.bar{ height:8px; background:#e7ddc8; border-radius:999px; margin-top:10px; overflow:hidden; }
+.bar > div{ height:100%; background:var(--red); transition:width .3s; }
+.sticky{ position:fixed; left:0; right:0; bottom:0; background:rgba(246,241,231,.92); border-top:1px solid #e0d5bd; backdrop-filter:blur(6px); padding:10px 14px; }
+@keyframes pop{ from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
+.pop{ animation:pop .25s ease both; }
+.overlay{ position:fixed; inset:0; background:rgba(28,25,23,.55); display:flex; align-items:flex-end; justify-content:center; z-index:60; }
+.sheet{ background:var(--cream); width:100%; max-width:620px; border-top-left-radius:18px; border-top-right-radius:18px; padding:16px 16px 20px; max-height:86vh; display:flex; flex-direction:column; }
+ul{ margin:10px 0 0; padding-left:18px; line-height:1.6; }
+</style>
+</head>
+<body>
+  <div id="header">
+    <div class="stripe"></div>
+    <div class="headrow wrapw">
+      <div id="home-crest" class="crest" title="Home">DTFC</div>
+      <div id="home-title" style="line-height:1.05; cursor:pointer;">
+        <div class="display" style="font-size:22px;">Downham Town FC</div>
+        <div style="font-size:12px; opacity:.9; font-weight:600; letter-spacing:.06em;">THE SAINTS · WORLD CUP 2026 SWEEPSTAKE</div>
+      </div>
+    </div>
+  </div>
+  <div id="app"></div>
+
+<script>
+"use strict";
+
+/* ----------------------------------------------------------------
+   DOWNHAM TOWN FC — WORLD CUP 2026 GROUP-STAGE PREDICTOR
+   Runs fully in the browser. No accounts, no backend.
+   Each person's progress is saved on their own device (localStorage),
+   and they send their entry to the organiser via WhatsApp.
+
+   ▸ Edit fixtures/dates in GROUPS and GROUP_DATES below.
+   ▸ The six matchups per group are correct (every team plays every
+     other once). Matchday 1 home/away matches the official fixtures;
+     MD2/MD3 ordering is best-effort — check BBC Sport if you want it
+     exact. It doesn't affect scoring, only how lines read.
+---------------------------------------------------------------- */
+
+var GROUPS = {
+  A: ["Mexico", "South Africa", "South Korea", "Czechia"],
+  B: ["Canada", "Bosnia & Herzegovina", "Qatar", "Switzerland"],
+  C: ["Brazil", "Morocco", "Haiti", "Scotland"],
+  D: ["USA", "Paraguay", "Turkey", "Australia"],
+  E: ["Germany", "Curaçao", "Ivory Coast", "Ecuador"],
+  F: ["Netherlands", "Japan", "Sweden", "Tunisia"],
+  G: ["Belgium", "Egypt", "Iran", "New Zealand"],
+  H: ["Spain", "Cabo Verde", "Saudi Arabia", "Uruguay"],
+  I: ["France", "Senegal", "Iraq", "Norway"],
+  J: ["Argentina", "Algeria", "Austria", "Jordan"],
+  K: ["Portugal", "DR Congo", "Uzbekistan", "Colombia"],
+  L: ["England", "Croatia", "Ghana", "Panama"]
+};
+var GROUP_DATES = {
+  A: ["11 Jun", "18 Jun", "24 Jun"], B: ["12 Jun", "18 Jun", "24 Jun"],
+  C: ["13 Jun", "19 Jun", "25 Jun"], D: ["13 Jun", "19 Jun", "25 Jun"],
+  E: ["14 Jun", "20 Jun", "26 Jun"], F: ["14 Jun", "20 Jun", "26 Jun"],
+  G: ["15 Jun", "21 Jun", "26 Jun"], H: ["15 Jun", "21 Jun", "26 Jun"],
+  I: ["16 Jun", "21 Jun", "26 Jun"], J: ["16 Jun", "22 Jun", "26 Jun"],
+  K: ["17 Jun", "22 Jun", "27 Jun"], L: ["17 Jun", "23 Jun", "27 Jun"]
+};
+var FLAGS = {
+  "Mexico":"🇲🇽","South Africa":"🇿🇦","South Korea":"🇰🇷","Czechia":"🇨🇿",
+  "Canada":"🇨🇦","Bosnia & Herzegovina":"🇧🇦","Qatar":"🇶🇦","Switzerland":"🇨🇭",
+  "Brazil":"🇧🇷","Morocco":"🇲🇦","Haiti":"🇭🇹","Scotland":"🏴󠁧󠁢󠁳󠁣󠁴󠁿",
+  "USA":"🇺🇸","Paraguay":"🇵🇾","Australia":"🇦🇺","Turkey":"🇹🇷",
+  "Germany":"🇩🇪","Curaçao":"🇨🇼","Ivory Coast":"🇨🇮","Ecuador":"🇪🇨",
+  "Netherlands":"🇳🇱","Japan":"🇯🇵","Sweden":"🇸🇪","Tunisia":"🇹🇳",
+  "Belgium":"🇧🇪","Egypt":"🇪🇬","Iran":"🇮🇷","New Zealand":"🇳🇿",
+  "Spain":"🇪🇸","Cabo Verde":"🇨🇻","Uruguay":"🇺🇾","Saudi Arabia":"🇸🇦",
+  "France":"🇫🇷","Senegal":"🇸🇳","Norway":"🇳🇴","Iraq":"🇮🇶",
+  "Argentina":"🇦🇷","Algeria":"🇩🇿","Austria":"🇦🇹","Jordan":"🇯🇴",
+  "Portugal":"🇵🇹","DR Congo":"🇨🇩","Uzbekistan":"🇺🇿","Colombia":"🇨🇴",
+  "England":"🏴󠁧󠁢󠁥󠁮󠁧󠁿","Croatia":"🇭🇷","Ghana":"🇬🇭","Panama":"🇵🇦"
+};
+var ROTATION = [ [[0,1],[2,3]], [[0,2],[3,1]], [[3,0],[1,2]] ];
+
+function buildMatches(){
+  var out = [];
+  Object.keys(GROUPS).forEach(function(g){
+    var t = GROUPS[g];
+    ROTATION.forEach(function(day, di){
+      day.forEach(function(pair, mi){
+        out.push({ id:g+"-"+(di+1)+"-"+mi, group:g, matchday:di+1,
+          date:GROUP_DATES[g][di], home:t[pair[0]], away:t[pair[1]] });
+      });
+    });
+  });
+  return out;
+}
+var MONTH = { Jun:6, Jul:7 };
+function dkey(d){ var p=d.split(" "); return MONTH[p[1]]*100 + parseInt(p[0],10); }
+var MATCHES = buildMatches().sort(function(a,b){ return dkey(a.date)-dkey(b.date) || a.group.localeCompare(b.group); });
+var TOTAL = MATCHES.length;
+
+/* --------------------------- storage --------------------------- */
+var LS_PREFIX = "dtfc-wc26:";
+function nkey(name){ return LS_PREFIX + name.trim().toLowerCase().replace(/\s+/g," "); }
+function safeGet(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }
+function safeSet(k,v){ try { localStorage.setItem(k,v); } catch(e){} }
+
+/* ----------------------------- state ---------------------------- */
+var state = { screen:"welcome", name:"", category:"Adult", predictions:{}, fGroup:"all", fMd:"all", saved:"" };
+var saveTimer = null;
+
+function loadEntry(name){
+  var raw = safeGet(nkey(name));
+  if (raw){ try { var d = JSON.parse(raw); return { category:d.category||"Adult", predictions:d.predictions||{} }; } catch(e){} }
+  return { category:"Adult", predictions:{} };
+}
+function persist(){
+  if (!state.name) return;
+  if (saveTimer) clearTimeout(saveTimer);
+  saveTimer = setTimeout(function(){
+    safeSet(nkey(state.name), JSON.stringify({
+      name:state.name, category:state.category, predictions:state.predictions, updatedAt:new Date().toISOString()
+    }));
+    safeSet(LS_PREFIX+"last", state.name);
+    var t = new Date();
+    state.saved = t.toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"});
+    var s = document.getElementById("saved"); if (s) s.textContent = "Saved ✓ " + state.saved;
+  }, 250);
+}
+function doneCount(){
+  var n=0; for (var i=0;i<MATCHES.length;i++){ var p=state.predictions[MATCHES[i].id]; if(p&&p.h!==""&&p.a!=="") n++; } return n;
+}
+
+/* --------------------------- WhatsApp --------------------------- */
+function buildWhatsApp(name, category, preds){
+  var L = [];
+  L.push("⚽ *World Cup 2026 — Downham Town FC*");
+  L.push("Entry: *" + name + "*" + (category==="Under 12" ? "  _(Under-12s)_" : ""));
+  var total = 0;
+  for (var d=1; d<=3; d++){
+    var day = MATCHES.filter(function(m){ return m.matchday===d; })
+      .filter(function(m){ var p=preds[m.id]; return p&&p.h!==""&&p.a!==""; });
+    if (!day.length) continue;
+    L.push(""); L.push("*Matchday " + d + "*");
+    day.forEach(function(m){ var p=preds[m.id]; L.push(m.home + " " + p.h + " - " + p.a + " " + m.away); total++; });
+  }
+  L.push("");
+  L.push(total ? ("_" + total + " of " + TOTAL + " group matches predicted_") : "_No predictions filled in yet_");
+  return L.join("\n");
+}
+function copyText(text){
+  return new Promise(function(resolve){
+    function fallback(){
+      try { var ta=document.createElement("textarea"); ta.value=text; ta.style.position="fixed"; ta.style.opacity="0";
+        document.body.appendChild(ta); ta.focus(); ta.select(); var ok=document.execCommand("copy");
+        document.body.removeChild(ta); resolve(ok); } catch(e){ resolve(false); }
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(function(){resolve(true);}, fallback);
+    } else fallback();
+  });
+}
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+/* ----------------------------- modal ---------------------------- */
+function openShare(text){
+  var ov = document.createElement("div"); ov.className="overlay";
+  ov.innerHTML =
+    '<div class="sheet pop">' +
+      '<div class="flex ac jb" style="margin-bottom:10px;">' +
+        '<div class="display" style="font-size:19px;color:var(--red);">Your WhatsApp entry</div>' +
+        '<button class="link" id="m-close">Close</button>' +
+      '</div>' +
+      '<textarea readonly class="field" id="m-text" style="flex:1;min-height:220px;font-size:14px;line-height:1.45;white-space:pre-wrap;resize:none;"></textarea>' +
+      '<div class="flex g8" style="margin-top:12px;">' +
+        '<button class="btn btn-red" id="m-copy" style="flex:1;padding:12px;">Copy message</button>' +
+        '<button class="btn btn-ghost" id="m-wa" style="flex:1;padding:12px;">Open WhatsApp</button>' +
+      '</div>' +
+      '<p class="muted" style="font-size:11px;margin-top:9px;">Tap the box to select all, or hit Copy. “Open WhatsApp” prefills the message so you just pick a chat and send.</p>' +
+    '</div>';
+  document.body.appendChild(ov);
+  var ta = ov.querySelector("#m-text"); ta.value = text;
+  ta.addEventListener("focus", function(){ ta.select(); });
+  function close(){ document.body.removeChild(ov); }
+  ov.addEventListener("click", function(e){ if (e.target===ov) close(); });
+  ov.querySelector("#m-close").addEventListener("click", close);
+  ov.querySelector("#m-wa").addEventListener("click", function(){ window.open("https://wa.me/?text="+encodeURIComponent(text), "_blank"); });
+  ov.querySelector("#m-copy").addEventListener("click", function(){
+    var btn=this; copyText(text).then(function(ok){ btn.textContent = ok ? "Copied ✓" : "Select & copy ↑"; setTimeout(function(){ btn.textContent="Copy message"; },2000); });
+  });
+}
+
+/* ----------------------------- views ---------------------------- */
+var app = document.getElementById("app");
+
+function showWelcome(){
+  state.screen="welcome";
+  var last = safeGet(LS_PREFIX+"last") || "";
+  app.innerHTML =
+    '<div class="pop" style="max-width:560px;margin:0 auto;padding:22px 18px 60px;">' +
+      '<div class="ticket" style="padding:22px 20px 24px;">' +
+        '<div class="display" style="font-size:30px;color:var(--red);">Predict the<br>Group Stage</div>' +
+        '<p style="margin-top:10px;font-size:15px;line-height:1.5;">Call the score of every group-stage match. Lock in your guesses <strong>before each game kicks off</strong> — you don\'t have to do them all at once.</p>' +
+        '<div style="margin-top:16px;">' +
+          '<label style="font-weight:700;font-size:13px;letter-spacing:.03em;">YOUR NAME</label>' +
+          '<input class="field" id="w-name" style="margin-top:6px;" placeholder="e.g. Jordan E" value="'+esc(last)+'">' +
+          '<p class="muted" style="font-size:12px;margin-top:6px;">Use the same name and device to add to or update your predictions later.</p>' +
+        '</div>' +
+        '<label style="margin-top:14px;display:flex;align-items:center;gap:9px;cursor:pointer;font-size:14px;font-weight:600;">' +
+          '<input type="checkbox" id="w-u12" style="width:18px;height:18px;accent-color:#b70000;"> I\'m entering the <span style="color:var(--red);">Under-12s</span> category' +
+        '</label>' +
+        '<button class="btn btn-red" id="w-start" style="margin-top:18px;width:100%;padding:13px;font-size:16px;">Start / Continue →</button>' +
+      '</div>' +
+      '<div class="ticket" style="margin-top:16px;padding:16px 18px;">' +
+        '<div class="display" style="font-size:17px;">How the group stage scores</div>' +
+        '<ul style="font-size:14px;">' +
+          '<li><strong>5 pts</strong> — exact correct score</li>' +
+          '<li><strong>2 pts</strong> — right result, wrong score</li>' +
+          '<li>£5 entry · cash prizes for the top 4 · separate Under-12s category</li>' +
+        '</ul>' +
+        '<p class="muted" style="font-size:12px;margin-top:10px;">Winners, top scorer and knockout predictions are handled separately by the organiser. This page is just for group-match scorelines.</p>' +
+      '</div>' +
+    '</div>';
+
+  var nameEl = document.getElementById("w-name");
+  var u12El = document.getElementById("w-u12");
+  if (last){ var pre=loadEntry(last); u12El.checked = pre.category==="Under 12"; }
+  function start(){
+    var name = nameEl.value.trim(); if (!name) { nameEl.focus(); return; }
+    var loaded = loadEntry(name);
+    state.name = name;
+    state.category = u12El.checked ? "Under 12" : "Adult";
+    state.predictions = loaded.predictions || {};
+    state.fGroup="all"; state.fMd="all"; state.saved="";
+    showPredict();
+  }
+  document.getElementById("w-start").addEventListener("click", start);
+  nameEl.addEventListener("keydown", function(e){ if (e.key==="Enter") start(); });
+}
+
+function matchCardHTML(m){
+  var p = state.predictions[m.id] || {h:"",a:""};
+  return '<div class="ticket" style="padding:12px 14px 13px;">' +
+      '<div class="flex ac jb" style="margin-bottom:8px;">' +
+        '<span class="gbadge">GROUP '+m.group+'</span>' +
+        '<span class="md-pill">MD'+m.matchday+' · '+m.date+'</span>' +
+      '</div>' +
+      '<div class="flex ac g8">' +
+        '<div class="team home">'+esc(m.home)+' <span class="flag">'+(FLAGS[m.home]||"")+'</span></div>' +
+        '<input class="scorebox'+(p.h!==""?" filled":"")+'" inputmode="numeric" data-id="'+m.id+'" data-side="h" value="'+esc(p.h)+'" aria-label="'+esc(m.home)+' score">' +
+        '<span class="dash">–</span>' +
+        '<input class="scorebox'+(p.a!==""?" filled":"")+'" inputmode="numeric" data-id="'+m.id+'" data-side="a" value="'+esc(p.a)+'" aria-label="'+esc(m.away)+' score">' +
+        '<div class="team away"><span class="flag">'+(FLAGS[m.away]||"")+'</span> '+esc(m.away)+'</div>' +
+      '</div>' +
+    '</div>';
+}
+function renderList(){
+  var list = document.getElementById("matchlist");
+  var f = MATCHES.filter(function(m){
+    return (state.fGroup==="all"||m.group===state.fGroup) && (state.fMd==="all"||m.matchday===parseInt(state.fMd,10));
+  });
+  list.innerHTML = f.length ? f.map(matchCardHTML).join("") : '<p class="muted">No matches for that filter.</p>';
+}
+function updateProgress(){
+  var n = doneCount();
+  var b = document.getElementById("pbar"); if (b) b.style.width = (n/TOTAL*100) + "%";
+  var c = document.getElementById("pcount"); if (c) c.textContent = (state.category==="Under 12"?"Under-12s entry · ":"") + n + " of " + TOTAL + " matches predicted";
+  var sb = document.getElementById("sharehint"); if (sb) sb.textContent = "Saves first, then builds a message with the " + n + " match" + (n===1?"":"es") + " you've completed.";
+}
+
+function showPredict(){
+  state.screen="predict";
+  var segGroups = ['all'].concat(Object.keys(GROUPS)).map(function(g){
+    return '<button data-fg="'+g+'" class="'+(state.fGroup===g?"on":"")+'">'+(g==="all"?"All":g)+'</button>';
+  }).join("");
+  var segMd = ['all','1','2','3'].map(function(x){
+    return '<button data-fm="'+x+'" class="'+(state.fMd===x?"on":"")+'">'+(x==="all"?"All":"Matchday "+x)+'</button>';
+  }).join("");
+
+  app.innerHTML =
+    '<div class="wrapw pop" style="padding:16px 14px 110px;">' +
+      '<div class="flex ac jb wrap g8">' +
+        '<div>' +
+          '<div class="display" style="font-size:22px;">'+esc(state.name)+'</div>' +
+          '<div class="muted" id="pcount" style="font-size:12px;"></div>' +
+        '</div>' +
+        '<button class="link" id="p-switch">← switch entrant</button>' +
+      '</div>' +
+      '<div class="bar"><div id="pbar" style="width:0%;"></div></div>' +
+      '<button class="btn btn-red" id="p-share" style="width:100%;margin-top:12px;padding:12px;font-size:15px;">📤 Send my entry as a WhatsApp message</button>' +
+      '<p class="muted" id="sharehint" style="font-size:11px;margin-top:6px;text-align:center;"></p>' +
+      '<div style="margin-top:14px;"><div style="font-size:12px;font-weight:700;color:#6b5e44;margin-bottom:5px;">FILTER BY GROUP</div><div class="seg" id="seg-group">'+segGroups+'</div></div>' +
+      '<div style="margin-top:10px;"><div style="font-size:12px;font-weight:700;color:#6b5e44;margin-bottom:5px;">FILTER BY MATCH DAY</div><div class="seg" id="seg-md">'+segMd+'</div></div>' +
+      '<div id="matchlist" style="display:grid;gap:10px;margin-top:16px;"></div>' +
+      '<p class="muted" style="font-size:11px;margin-top:18px;line-height:1.5;">Fixtures are built from the official 12 groups (every team plays every other once). Match-day ordering and dates are approximate — check BBC Sport for exact kick-off times.</p>' +
+    '</div>' +
+    '<div class="sticky"><div class="wrapw flex ac g8">' +
+      '<button class="btn btn-red" id="p-save" style="flex:1;padding:13px;font-size:16px;">Save my predictions</button>' +
+      '<span class="muted" id="saved" style="font-size:12px;min-width:96px;text-align:right;">Saved automatically</span>' +
+    '</div></div>';
+
+  renderList();
+  updateProgress();
+
+  document.getElementById("p-switch").addEventListener("click", function(){ if(saveTimer)clearTimeout(saveTimer); persistNow(); showWelcome(); });
+  document.getElementById("p-save").addEventListener("click", function(){ persistNow(); });
+  document.getElementById("p-share").addEventListener("click", function(){
+    persistNow(); openShare(buildWhatsApp(state.name, state.category, state.predictions));
+  });
+
+  document.getElementById("seg-group").addEventListener("click", function(e){
+    var b=e.target.closest("button[data-fg]"); if(!b) return; state.fGroup=b.getAttribute("data-fg");
+    Array.prototype.forEach.call(this.children, function(c){ c.classList.toggle("on", c===b); }); renderList();
+  });
+  document.getElementById("seg-md").addEventListener("click", function(e){
+    var b=e.target.closest("button[data-fm]"); if(!b) return; state.fMd=b.getAttribute("data-fm");
+    Array.prototype.forEach.call(this.children, function(c){ c.classList.toggle("on", c===b); }); renderList();
+  });
+
+  document.getElementById("matchlist").addEventListener("input", function(e){
+    var el=e.target; if(!el.classList.contains("scorebox")) return;
+    var v = el.value.replace(/\D/g,"").slice(0,2); el.value=v;
+    var id=el.getAttribute("data-id"), side=el.getAttribute("data-side");
+    var cur = state.predictions[id] || {h:"",a:""}; cur[side]=v; state.predictions[id]=cur;
+    el.classList.toggle("filled", v!=="");
+    persist(); updateProgress();
+  });
+}
+function persistNow(){
+  if (saveTimer){ clearTimeout(saveTimer); saveTimer=null; }
+  if (!state.name) return;
+  safeSet(nkey(state.name), JSON.stringify({ name:state.name, category:state.category, predictions:state.predictions, updatedAt:new Date().toISOString() }));
+  safeSet(LS_PREFIX+"last", state.name);
+  var t=new Date(); state.saved=t.toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"});
+  var s=document.getElementById("saved"); if(s) s.textContent="Saved ✓ "+state.saved;
+}
+
+/* ----------------------------- init ----------------------------- */
+document.getElementById("home-crest").addEventListener("click", function(){ persistNow(); showWelcome(); });
+document.getElementById("home-title").addEventListener("click", function(){ persistNow(); showWelcome(); });
+showWelcome();
+</script>
+</body>
+</html>
