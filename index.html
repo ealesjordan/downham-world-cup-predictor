@@ -74,6 +74,24 @@ body{
 .overlay{ position:fixed; inset:0; background:rgba(28,25,23,.55); display:flex; align-items:flex-end; justify-content:center; z-index:60; }
 .sheet{ background:var(--cream); width:100%; max-width:620px; border-top-left-radius:18px; border-top-right-radius:18px; padding:16px 16px 20px; max-height:86vh; display:flex; flex-direction:column; }
 ul{ margin:10px 0 0; padding-left:18px; line-height:1.6; }
+.tabs{ display:flex; gap:6px; margin-top:14px; }
+.tab{ flex:1; text-align:center; padding:10px; border-radius:10px 10px 0 0; border:1px solid #ddd2b8; border-bottom:none; background:#efe7d4; color:#6b5e44; font-weight:700; font-family:'Anton',sans-serif; letter-spacing:.02em; font-size:15px; cursor:pointer; }
+.tab.on{ background:var(--red); color:#fff; border-color:var(--red); }
+.tab.lock{ opacity:.6; }
+.koround{ margin-top:18px; }
+.koround > .rh{ font-family:'Anton',sans-serif; font-size:16px; color:var(--red); letter-spacing:.03em; margin-bottom:8px; text-transform:uppercase; }
+.ko-match{ background:#fff; border:1px solid #e7ddc8; border-radius:12px; overflow:hidden; margin-bottom:8px; box-shadow:0 6px 16px -14px rgba(0,0,0,.4); }
+.ko-team{ display:flex; align-items:center; gap:8px; width:100%; text-align:left; border:none; background:#fff; padding:11px 13px; font-size:15px; font-weight:700; font-family:'Archivo',sans-serif; cursor:pointer; color:var(--ink); border-bottom:1px solid #f0e9d8; }
+.ko-team:last-child{ border-bottom:none; }
+.ko-team:hover:not(.tbd){ background:#faf6ed; }
+.ko-team.win{ background:var(--red); color:#fff; }
+.ko-team.win .seed{ color:#ffd; }
+.ko-team .seed{ font-size:11px; color:#9a8d70; font-weight:700; min-width:42px; }
+.ko-team.tbd{ color:#b9ab8c; cursor:default; font-style:italic; font-weight:600; }
+.ko-mno{ font-size:10px; color:#b9ab8c; padding:3px 13px 0; font-weight:700; letter-spacing:.04em; background:#fff; }
+.champ{ background:linear-gradient(95deg,var(--red),var(--red-dk)); color:#fff; border-radius:14px; padding:16px 18px; margin-top:6px; text-align:center; }
+.champ .display{ font-size:26px; }
+.locked{ text-align:center; padding:30px 18px; }
 </style>
 </head>
 <body>
@@ -161,6 +179,110 @@ function dkey(d){ var p=d.split(" "); return MONTH[p[1]]*100 + parseInt(p[0],10)
 var MATCHES = buildMatches().sort(function(a,b){ return dkey(a.date)-dkey(b.date) || a.group.localeCompare(b.group); });
 var TOTAL = MATCHES.length;
 
+/* ---------------------- knockout structure ---------------------- */
+/* Official 2026 Round-of-32 pairings (Matches 73–88). t: W=winner, RU=runner-up, 3=best third (by cluster slot). */
+var R32DEF = [
+  { m:73, a:{t:"RU",g:"A"}, b:{t:"RU",g:"B"} },
+  { m:74, a:{t:"W",g:"E"},  b:{t:"3",slot:74} },
+  { m:75, a:{t:"W",g:"F"},  b:{t:"RU",g:"C"} },
+  { m:76, a:{t:"W",g:"C"},  b:{t:"RU",g:"F"} },
+  { m:77, a:{t:"W",g:"I"},  b:{t:"3",slot:77} },
+  { m:78, a:{t:"RU",g:"E"}, b:{t:"RU",g:"I"} },
+  { m:79, a:{t:"W",g:"A"},  b:{t:"3",slot:79} },
+  { m:80, a:{t:"W",g:"L"},  b:{t:"3",slot:80} },
+  { m:81, a:{t:"W",g:"D"},  b:{t:"3",slot:81} },
+  { m:82, a:{t:"W",g:"G"},  b:{t:"3",slot:82} },
+  { m:83, a:{t:"RU",g:"K"}, b:{t:"RU",g:"L"} },
+  { m:84, a:{t:"W",g:"H"},  b:{t:"RU",g:"J"} },
+  { m:85, a:{t:"W",g:"B"},  b:{t:"3",slot:85} },
+  { m:86, a:{t:"W",g:"J"},  b:{t:"RU",g:"H"} },
+  { m:87, a:{t:"W",g:"K"},  b:{t:"3",slot:87} },
+  { m:88, a:{t:"RU",g:"D"}, b:{t:"RU",g:"G"} }
+];
+var THIRD_CLUSTERS = {
+  74:["A","B","C","D","F"], 77:["C","D","F","G","H"], 79:["C","E","F","H","I"],
+  80:["E","H","I","J","K"], 81:["B","E","F","I","J"], 82:["A","E","H","I","J"],
+  85:["E","F","G","I","J"], 87:["D","E","I","J","L"]
+};
+var LATERDEF = [
+  {m:89,a:74,b:77},{m:90,a:73,b:75},{m:91,a:76,b:78},{m:92,a:79,b:80},
+  {m:93,a:83,b:84},{m:94,a:81,b:82},{m:95,a:86,b:88},{m:96,a:85,b:87},
+  {m:97,a:89,b:90},{m:98,a:93,b:94},{m:99,a:91,b:92},{m:100,a:95,b:96},
+  {m:101,a:97,b:98},{m:102,a:99,b:100},{m:103,a:101,b:102}
+];
+var LATERMAP = {}; LATERDEF.forEach(function(d){ LATERMAP[d.m]=d; });
+var ALLNOS = []; for (var _i=73;_i<=103;_i++) ALLNOS.push(_i);
+var KO_ROUNDS = [
+  { key:"R32", label:"Round of 32",   matches:[73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88] },
+  { key:"R16", label:"Round of 16",   matches:[89,90,91,92,93,94,95,96] },
+  { key:"QF",  label:"Quarter-finals",matches:[97,98,99,100] },
+  { key:"SF",  label:"Semi-finals",   matches:[101,102] },
+  { key:"F",   label:"Final",         matches:[103] }
+];
+var KO_TOTAL = 31;
+
+function cmpTeam(x,y){ return y.pts-x.pts || y.gd-x.gd || y.gf-x.gf || x.team.localeCompare(y.team); }
+
+function computeTables(preds){
+  var tables = {};
+  Object.keys(GROUPS).forEach(function(g){
+    var stat = {};
+    GROUPS[g].forEach(function(t){ stat[t]={team:t,group:g,pts:0,gf:0,ga:0,gd:0,played:0}; });
+    MATCHES.filter(function(m){ return m.group===g; }).forEach(function(m){
+      var p = preds[m.id]; if (!p || p.h==="" || p.a==="") return;
+      var h=parseInt(p.h,10), a=parseInt(p.a,10), H=stat[m.home], A=stat[m.away];
+      H.gf+=h; H.ga+=a; A.gf+=a; A.ga+=h; H.played++; A.played++;
+      if (h>a) H.pts+=3; else if (h<a) A.pts+=3; else { H.pts++; A.pts++; }
+    });
+    var arr = GROUPS[g].map(function(t){ var s=stat[t]; s.gd=s.gf-s.ga; return s; });
+    arr.sort(cmpTeam);
+    tables[g]=arr;
+  });
+  return tables;
+}
+function assignThirds(qualGroups){
+  var slots=[74,77,79,80,81,82,85,87], assign={}, used={};
+  var order=slots.slice().sort(function(a,b){
+    function n(s){ return THIRD_CLUSTERS[s].filter(function(g){return qualGroups.indexOf(g)>=0;}).length; }
+    return n(a)-n(b);
+  });
+  function solve(i){
+    if (i===order.length) return true;
+    var slot=order[i];
+    var dom=THIRD_CLUSTERS[slot].filter(function(g){ return qualGroups.indexOf(g)>=0 && !used[g]; });
+    for (var k=0;k<dom.length;k++){ assign[slot]=dom[k]; used[dom[k]]=true; if (solve(i+1)) return true; used[dom[k]]=false; delete assign[slot]; }
+    return false;
+  }
+  if (solve(0)) return assign;
+  var fb={}, u={}; slots.forEach(function(s){ for (var j=0;j<qualGroups.length;j++){ if(!u[qualGroups[j]]){ fb[s]=qualGroups[j]; u[qualGroups[j]]=true; break; } } });
+  return fb;
+}
+function r32team(ref, tables, thirdBySlot){
+  if (ref.t==="W")  return tables[ref.g][0].team;
+  if (ref.t==="RU") return tables[ref.g][1].team;
+  if (ref.t==="3")  return thirdBySlot[ref.slot] || null;
+  return null;
+}
+/* Returns { tables, qualThirds, thirdBySlot, teams:{matchNo:[a,b]} } and prunes invalid winners in place. */
+function computeBracket(preds, winners){
+  var tables = computeTables(preds);
+  var thirds = Object.keys(GROUPS).map(function(g){ return tables[g][2]; }).slice().sort(cmpTeam);
+  var qualThirds = thirds.slice(0,8);
+  var qualGroups = qualThirds.map(function(s){ return s.group; });
+  var slotAssign = assignThirds(qualGroups);
+  var thirdBySlot = {}; Object.keys(slotAssign).forEach(function(s){ thirdBySlot[s]=tables[slotAssign[s]][2].team; });
+
+  var teams = {}, defByNo = {};
+  R32DEF.forEach(function(d){ defByNo[d.m]=d; teams[d.m]=[ r32team(d.a,tables,thirdBySlot), r32team(d.b,tables,thirdBySlot) ]; });
+  ALLNOS.forEach(function(no){
+    if (no>88){ var d=LATERMAP[no]; teams[no]=[ winners[d.a]||null, winners[d.b]||null ]; }
+    var w=winners[no];
+    if (w!=null){ var t=teams[no]; if (!t || (t[0]!==w && t[1]!==w)) delete winners[no]; }
+  });
+  return { tables:tables, qualThirds:qualThirds, thirdBySlot:thirdBySlot, teams:teams };
+}
+function koPicked(winners){ var n=0; ALLNOS.forEach(function(no){ if(winners[no]) n++; }); return n; }
+
 /* --------------------------- storage --------------------------- */
 var LS_PREFIX = "dtfc-wc26:";
 function nkey(name){ return LS_PREFIX + name.trim().toLowerCase().replace(/\s+/g," "); }
@@ -168,20 +290,20 @@ function safeGet(k){ try { return localStorage.getItem(k); } catch(e){ return nu
 function safeSet(k,v){ try { localStorage.setItem(k,v); } catch(e){} }
 
 /* ----------------------------- state ---------------------------- */
-var state = { screen:"welcome", name:"", category:"Adult", predictions:{}, fGroup:"all", fMd:"all", saved:"" };
+var state = { screen:"welcome", name:"", category:"Adult", predictions:{}, knockout:{}, tab:"group", fGroup:"all", fMd:"all", saved:"" };
 var saveTimer = null;
 
 function loadEntry(name){
   var raw = safeGet(nkey(name));
-  if (raw){ try { var d = JSON.parse(raw); return { category:d.category||"Adult", predictions:d.predictions||{} }; } catch(e){} }
-  return { category:"Adult", predictions:{} };
+  if (raw){ try { var d = JSON.parse(raw); return { category:d.category||"Adult", predictions:d.predictions||{}, knockout:d.knockout||{} }; } catch(e){} }
+  return { category:"Adult", predictions:{}, knockout:{} };
 }
 function persist(){
   if (!state.name) return;
   if (saveTimer) clearTimeout(saveTimer);
   saveTimer = setTimeout(function(){
     safeSet(nkey(state.name), JSON.stringify({
-      name:state.name, category:state.category, predictions:state.predictions, updatedAt:new Date().toISOString()
+      name:state.name, category:state.category, predictions:state.predictions, knockout:state.knockout, updatedAt:new Date().toISOString()
     }));
     safeSet(LS_PREFIX+"last", state.name);
     var t = new Date();
@@ -194,7 +316,7 @@ function doneCount(){
 }
 
 /* --------------------------- WhatsApp --------------------------- */
-function buildWhatsApp(name, category, preds){
+function buildWhatsApp(name, category, preds, winners){
   var L = [];
   L.push("⚽ *World Cup 2026 — Downham Town FC*");
   L.push("Entry: *" + name + "*" + (category==="Under 12" ? "  _(Under-12s)_" : ""));
@@ -208,6 +330,17 @@ function buildWhatsApp(name, category, preds){
   }
   L.push("");
   L.push(total ? ("_" + total + " of " + TOTAL + " group matches predicted_") : "_No predictions filled in yet_");
+
+  winners = winners || {};
+  if (koPicked(winners) > 0){
+    L.push(""); L.push("*— Knockout predictions —*");
+    KO_ROUNDS.forEach(function(r){
+      if (r.key==="F") return;
+      var ws = r.matches.map(function(n){ return winners[n]; }).filter(Boolean);
+      if (ws.length){ L.push(""); L.push("*" + r.label + " winners*"); L.push(ws.join(", ")); }
+    });
+    if (winners[103]){ L.push(""); L.push("🏆 *Champion: " + winners[103] + "*"); }
+  }
   return L.join("\n");
 }
 function copyText(text){
@@ -293,6 +426,8 @@ function showWelcome(){
     state.name = name;
     state.category = u12El.checked ? "Under 12" : "Adult";
     state.predictions = loaded.predictions || {};
+    state.knockout = loaded.knockout || {};
+    state.tab = "group";
     state.fGroup="all"; state.fMd="all"; state.saved="";
     showPredict();
   }
@@ -327,20 +462,13 @@ function updateProgress(){
   var n = doneCount();
   var b = document.getElementById("pbar"); if (b) b.style.width = (n/TOTAL*100) + "%";
   var c = document.getElementById("pcount"); if (c) c.textContent = (state.category==="Under 12"?"Under-12s entry · ":"") + n + " of " + TOTAL + " matches predicted";
-  var sb = document.getElementById("sharehint"); if (sb) sb.textContent = "Saves first, then builds a message with the " + n + " match" + (n===1?"":"es") + " you've completed.";
+  var kt = document.getElementById("tab-ko"); if (kt) kt.className = "tab" + (state.tab==="ko"?" on":"") + (n<TOTAL?" lock":"");
 }
 
 function showPredict(){
   state.screen="predict";
-  var segGroups = ['all'].concat(Object.keys(GROUPS)).map(function(g){
-    return '<button data-fg="'+g+'" class="'+(state.fGroup===g?"on":"")+'">'+(g==="all"?"All":g)+'</button>';
-  }).join("");
-  var segMd = ['all','1','2','3'].map(function(x){
-    return '<button data-fm="'+x+'" class="'+(state.fMd===x?"on":"")+'">'+(x==="all"?"All":"Matchday "+x)+'</button>';
-  }).join("");
-
   app.innerHTML =
-    '<div class="wrapw pop" style="padding:16px 14px 110px;">' +
+    '<div class="wrapw pop" style="padding:16px 14px 120px;">' +
       '<div class="flex ac jb wrap g8">' +
         '<div>' +
           '<div class="display" style="font-size:22px;">'+esc(state.name)+'</div>' +
@@ -348,27 +476,53 @@ function showPredict(){
         '</div>' +
         '<button class="link" id="p-switch">← switch entrant</button>' +
       '</div>' +
+      '<div class="tabs">' +
+        '<div class="tab" id="tab-group">Group Stage</div>' +
+        '<div class="tab" id="tab-ko">Knockouts</div>' +
+      '</div>' +
+      '<div id="tabcontent"></div>' +
+    '</div>' +
+    '<div class="sticky"><div class="wrapw flex ac g8">' +
+      '<button class="btn btn-red" id="p-save" style="flex:1;padding:13px;font-size:15px;">Save</button>' +
+      '<button class="btn btn-ghost" id="p-share" style="flex:1.4;padding:13px;font-size:15px;">📤 Send via WhatsApp</button>' +
+    '</div><div class="wrapw" style="text-align:right;margin-top:4px;"><span class="muted" id="saved" style="font-size:11px;">Saved automatically</span></div></div>';
+
+  document.getElementById("p-switch").addEventListener("click", function(){ persistNow(); showWelcome(); });
+  document.getElementById("p-save").addEventListener("click", function(){ persistNow(); });
+  document.getElementById("p-share").addEventListener("click", function(){
+    persistNow(); openShare(buildWhatsApp(state.name, state.category, state.predictions, state.knockout));
+  });
+  document.getElementById("tab-group").addEventListener("click", function(){ state.tab="group"; renderTab(); });
+  document.getElementById("tab-ko").addEventListener("click", function(){ state.tab="ko"; renderTab(); });
+  document.getElementById("tabcontent").addEventListener("click", koClickHandler);
+
+  renderTab();
+}
+
+function renderTab(){
+  document.getElementById("tab-group").className = "tab" + (state.tab==="group"?" on":"");
+  if (state.tab==="group") renderGroupTab(); else renderKOTab();
+  updateProgress();
+}
+
+function renderGroupTab(){
+  var segGroups = ['all'].concat(Object.keys(GROUPS)).map(function(g){
+    return '<button data-fg="'+g+'" class="'+(state.fGroup===g?"on":"")+'">'+(g==="all"?"All":g)+'</button>';
+  }).join("");
+  var segMd = ['all','1','2','3'].map(function(x){
+    return '<button data-fm="'+x+'" class="'+(state.fMd===x?"on":"")+'">'+(x==="all"?"All":"Matchday "+x)+'</button>';
+  }).join("");
+
+  document.getElementById("tabcontent").innerHTML =
+    '<div style="border:1px solid #ddd2b8;border-top:none;border-radius:0 0 10px 10px;padding:14px;background:rgba(255,255,255,.4);">' +
       '<div class="bar"><div id="pbar" style="width:0%;"></div></div>' +
-      '<button class="btn btn-red" id="p-share" style="width:100%;margin-top:12px;padding:12px;font-size:15px;">📤 Send my entry as a WhatsApp message</button>' +
-      '<p class="muted" id="sharehint" style="font-size:11px;margin-top:6px;text-align:center;"></p>' +
       '<div style="margin-top:14px;"><div style="font-size:12px;font-weight:700;color:#6b5e44;margin-bottom:5px;">FILTER BY GROUP</div><div class="seg" id="seg-group">'+segGroups+'</div></div>' +
       '<div style="margin-top:10px;"><div style="font-size:12px;font-weight:700;color:#6b5e44;margin-bottom:5px;">FILTER BY MATCH DAY</div><div class="seg" id="seg-md">'+segMd+'</div></div>' +
       '<div id="matchlist" style="display:grid;gap:10px;margin-top:16px;"></div>' +
       '<p class="muted" style="font-size:11px;margin-top:18px;line-height:1.5;">Fixtures are built from the official 12 groups (every team plays every other once). Match-day ordering and dates are approximate — check BBC Sport for exact kick-off times.</p>' +
-    '</div>' +
-    '<div class="sticky"><div class="wrapw flex ac g8">' +
-      '<button class="btn btn-red" id="p-save" style="flex:1;padding:13px;font-size:16px;">Save my predictions</button>' +
-      '<span class="muted" id="saved" style="font-size:12px;min-width:96px;text-align:right;">Saved automatically</span>' +
-    '</div></div>';
+    '</div>';
 
   renderList();
-  updateProgress();
-
-  document.getElementById("p-switch").addEventListener("click", function(){ if(saveTimer)clearTimeout(saveTimer); persistNow(); showWelcome(); });
-  document.getElementById("p-save").addEventListener("click", function(){ persistNow(); });
-  document.getElementById("p-share").addEventListener("click", function(){
-    persistNow(); openShare(buildWhatsApp(state.name, state.category, state.predictions));
-  });
 
   document.getElementById("seg-group").addEventListener("click", function(e){
     var b=e.target.closest("button[data-fg]"); if(!b) return; state.fGroup=b.getAttribute("data-fg");
@@ -378,7 +532,6 @@ function showPredict(){
     var b=e.target.closest("button[data-fm]"); if(!b) return; state.fMd=b.getAttribute("data-fm");
     Array.prototype.forEach.call(this.children, function(c){ c.classList.toggle("on", c===b); }); renderList();
   });
-
   document.getElementById("matchlist").addEventListener("input", function(e){
     var el=e.target; if(!el.classList.contains("scorebox")) return;
     var v = el.value.replace(/\D/g,"").slice(0,2); el.value=v;
@@ -388,10 +541,84 @@ function showPredict(){
     persist(); updateProgress();
   });
 }
+
+function koTeamRow(team, seed, matchNo, isWin){
+  if (!team) return '<div class="ko-team tbd"><span class="seed">'+seed+'</span>To be decided</div>';
+  return '<button class="ko-team'+(isWin?" win":"")+'" data-m="'+matchNo+'" data-team="'+esc(team)+'">' +
+    '<span class="seed">'+seed+'</span><span class="flag">'+(FLAGS[team]||"")+'</span> '+esc(team)+'</button>';
+}
+function seedLabel(ref){
+  if (!ref) return "";
+  if (ref.t==="W")  return "Win "+ref.g;
+  if (ref.t==="RU") return "2nd "+ref.g;
+  if (ref.t==="3")  return "3rd";
+  return "";
+}
+function renderKOTab(){
+  var tc = document.getElementById("tabcontent");
+  var done = doneCount();
+  if (done < TOTAL){
+    tc.innerHTML =
+      '<div class="locked" style="border:1px solid #ddd2b8;border-top:none;border-radius:0 0 10px 10px;background:rgba(255,255,255,.4);">' +
+        '<div style="font-size:34px;">🔒</div>' +
+        '<div class="display" style="font-size:20px;color:var(--red);margin-top:6px;">Finish the group stage first</div>' +
+        '<p class="muted" style="font-size:14px;margin-top:8px;">Predict all '+TOTAL+' group matches and we\'ll work out who qualifies, build your bracket, and unlock the knockouts.</p>' +
+        '<p style="font-weight:700;margin-top:10px;">'+done+' / '+TOTAL+' done — '+(TOTAL-done)+' to go</p>' +
+        '<button class="btn btn-ghost" id="ko-goback" style="margin-top:12px;padding:10px 16px;">← Back to group stage</button>' +
+      '</div>';
+    document.getElementById("ko-goback").addEventListener("click", function(){ state.tab="group"; renderTab(); });
+    return;
+  }
+
+  var br = computeBracket(state.predictions, state.knockout);
+  var defByNo = {}; R32DEF.forEach(function(d){ defByNo[d.m]=d; });
+
+  var qualLine = br.qualThirds.map(function(s){ return s.team+" ("+s.group+")"; }).join(", ");
+
+  var html = '<div style="border:1px solid #ddd2b8;border-top:none;border-radius:0 0 10px 10px;padding:14px;background:rgba(255,255,255,.4);">';
+  html += '<p style="font-size:13px;line-height:1.5;"><strong>Your qualifiers are in.</strong> Top two from each group go through, plus the eight best third-placed teams. Tap the team you think wins each tie — winners carry into the next round.</p>';
+  html += '<p class="muted" style="font-size:11px;margin-top:8px;line-height:1.5;"><strong>Best third-placed (yours):</strong> '+esc(qualLine)+'</p>';
+  html += '<div id="kopicks" style="font-size:12px;font-weight:700;color:#6b5e44;margin-top:10px;"></div>';
+
+  var champ = state.knockout[103];
+  if (champ){
+    html += '<div class="champ"><div style="font-size:12px;letter-spacing:.1em;opacity:.85;">YOUR WORLD CUP WINNER</div><div class="display">'+(FLAGS[champ]||"")+' '+esc(champ)+'</div></div>';
+  }
+
+  KO_ROUNDS.forEach(function(r){
+    html += '<div class="koround"><div class="rh">'+r.label+'</div>';
+    r.matches.forEach(function(no){
+      var t = br.teams[no] || [null,null];
+      var w = state.knockout[no] || null;
+      var sa = "", sb = "";
+      if (no<=88){ sa=seedLabel(defByNo[no].a); sb=seedLabel(defByNo[no].b); }
+      else { sa="W"+LATERMAP[no].a; sb="W"+LATERMAP[no].b; }
+      html += '<div class="ko-match">' +
+        '<div class="ko-mno">Match '+no+'</div>' +
+        koTeamRow(t[0], sa, no, w && w===t[0]) +
+        koTeamRow(t[1], sb, no, w && w===t[1]) +
+        '</div>';
+    });
+    html += '</div>';
+  });
+  html += '</div>';
+  tc.innerHTML = html;
+
+  document.getElementById("kopicks").textContent = "Bracket: " + koPicked(state.knockout) + " of " + KO_TOTAL + " picks made";
+}
+function koClickHandler(e){
+  var btn = e.target.closest(".ko-team"); if (!btn || btn.classList.contains("tbd")) return;
+  var no = parseInt(btn.getAttribute("data-m"),10);
+  var team = btn.getAttribute("data-team");
+  if (state.knockout[no] === team) { delete state.knockout[no]; } // tap again to clear
+  else { state.knockout[no] = team; }
+  persist();
+  renderKOTab(); // recompute downstream + re-render
+}
 function persistNow(){
   if (saveTimer){ clearTimeout(saveTimer); saveTimer=null; }
   if (!state.name) return;
-  safeSet(nkey(state.name), JSON.stringify({ name:state.name, category:state.category, predictions:state.predictions, updatedAt:new Date().toISOString() }));
+  safeSet(nkey(state.name), JSON.stringify({ name:state.name, category:state.category, predictions:state.predictions, knockout:state.knockout, updatedAt:new Date().toISOString() }));
   safeSet(LS_PREFIX+"last", state.name);
   var t=new Date(); state.saved=t.toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"});
   var s=document.getElementById("saved"); if(s) s.textContent="Saved ✓ "+state.saved;
