@@ -178,6 +178,7 @@ var MONTH = { Jun:6, Jul:7 };
 function dkey(d){ var p=d.split(" "); return MONTH[p[1]]*100 + parseInt(p[0],10); }
 var MATCHES = buildMatches().sort(function(a,b){ return dkey(a.date)-dkey(b.date) || a.group.localeCompare(b.group); });
 var TOTAL = MATCHES.length;
+var ALL_TEAMS = (function(){ var a=[]; Object.keys(GROUPS).forEach(function(g){ GROUPS[g].forEach(function(t){ a.push(t); }); }); a.sort(); return a; })();
 
 /* ---------------------- knockout structure ---------------------- */
 /* Official 2026 Round-of-32 pairings (Matches 73–88). t: W=winner, RU=runner-up, 3=best third (by cluster slot). */
@@ -290,20 +291,20 @@ function safeGet(k){ try { return localStorage.getItem(k); } catch(e){ return nu
 function safeSet(k,v){ try { localStorage.setItem(k,v); } catch(e){} }
 
 /* ----------------------------- state ---------------------------- */
-var state = { screen:"welcome", name:"", category:"Adult", predictions:{}, knockout:{}, tab:"group", fGroup:"all", fMd:"all", saved:"" };
+var state = { screen:"welcome", name:"", category:"Adult", winner:"", topScorer:"", predictions:{}, knockout:{}, tab:"group", fGroup:"all", fMd:"all", saved:"" };
 var saveTimer = null;
 
 function loadEntry(name){
   var raw = safeGet(nkey(name));
-  if (raw){ try { var d = JSON.parse(raw); return { category:d.category||"Adult", predictions:d.predictions||{}, knockout:d.knockout||{} }; } catch(e){} }
-  return { category:"Adult", predictions:{}, knockout:{} };
+  if (raw){ try { var d = JSON.parse(raw); return { category:d.category||"Adult", winner:d.winner||"", topScorer:d.topScorer||"", predictions:d.predictions||{}, knockout:d.knockout||{} }; } catch(e){} }
+  return { category:"Adult", winner:"", topScorer:"", predictions:{}, knockout:{} };
 }
 function persist(){
   if (!state.name) return;
   if (saveTimer) clearTimeout(saveTimer);
   saveTimer = setTimeout(function(){
     safeSet(nkey(state.name), JSON.stringify({
-      name:state.name, category:state.category, predictions:state.predictions, knockout:state.knockout, updatedAt:new Date().toISOString()
+      name:state.name, category:state.category, winner:state.winner, topScorer:state.topScorer, predictions:state.predictions, knockout:state.knockout, updatedAt:new Date().toISOString()
     }));
     safeSet(LS_PREFIX+"last", state.name);
     var t = new Date();
@@ -316,10 +317,15 @@ function doneCount(){
 }
 
 /* --------------------------- WhatsApp --------------------------- */
-function buildWhatsApp(name, category, preds, winners){
+function buildWhatsApp(entry){
+  var name=entry.name, category=entry.category, preds=entry.predictions||{}, winners=entry.knockout||{};
   var L = [];
   L.push("⚽ *World Cup 2026 — Downham Town FC*");
   L.push("Entry: *" + name + "*" + (category==="Under 12" ? "  _(Under-12s)_" : ""));
+  L.push("");
+  L.push("🏆 *Winner:* " + (entry.winner || "_(not chosen yet)_"));
+  L.push("👟 *Top scorer:* " + (entry.topScorer || "_(not chosen yet)_"));
+
   var total = 0;
   for (var d=1; d<=3; d++){
     var day = MATCHES.filter(function(m){ return m.matchday===d; })
@@ -331,7 +337,16 @@ function buildWhatsApp(name, category, preds, winners){
   L.push("");
   L.push(total ? ("_" + total + " of " + TOTAL + " group matches predicted_") : "_No predictions filled in yet_");
 
-  winners = winners || {};
+  // Once every group match is in, list the 32 qualifiers
+  if (total === TOTAL){
+    var br = computeBracket(preds, {});
+    L.push(""); L.push("*Teams through to the Round of 32* (32)");
+    Object.keys(GROUPS).forEach(function(g){
+      L.push(g + ": " + br.tables[g][0].team + ", " + br.tables[g][1].team);
+    });
+    L.push("Best 3rd-placed: " + br.qualThirds.map(function(s){ return s.team; }).join(", "));
+  }
+
   if (koPicked(winners) > 0){
     L.push(""); L.push("*— Knockout predictions —*");
     KO_ROUNDS.forEach(function(r){
@@ -401,6 +416,17 @@ function showWelcome(){
           '<input class="field" id="w-name" style="margin-top:6px;" placeholder="e.g. Jordan E" value="'+esc(last)+'">' +
           '<p class="muted" style="font-size:12px;margin-top:6px;">Use the same name and device to add to or update your predictions later.</p>' +
         '</div>' +
+        '<div style="margin-top:14px;">' +
+          '<label style="font-weight:700;font-size:13px;letter-spacing:.03em;">🏆 PREDICTED WINNER <span class="muted" style="font-weight:600;">(25 pts)</span></label>' +
+          '<select class="field" id="w-winner" style="margin-top:6px;">' +
+            '<option value="">— choose a team —</option>' +
+            ALL_TEAMS.map(function(t){ return '<option value="'+esc(t)+'">'+(FLAGS[t]||"")+' '+esc(t)+'</option>'; }).join("") +
+          '</select>' +
+        '</div>' +
+        '<div style="margin-top:14px;">' +
+          '<label style="font-weight:700;font-size:13px;letter-spacing:.03em;">👟 TOP GOALSCORER <span class="muted" style="font-weight:600;">(25 pts)</span></label>' +
+          '<input class="field" id="w-topscorer" style="margin-top:6px;" placeholder="e.g. Kylian Mbappé">' +
+        '</div>' +
         '<label style="margin-top:14px;display:flex;align-items:center;gap:9px;cursor:pointer;font-size:14px;font-weight:600;">' +
           '<input type="checkbox" id="w-u12" style="width:18px;height:18px;accent-color:#b70000;"> I\'m entering the <span style="color:var(--red);">Under-12s</span> category' +
         '</label>' +
@@ -411,20 +437,27 @@ function showWelcome(){
         '<ul style="font-size:14px;">' +
           '<li><strong>5 pts</strong> — exact correct score</li>' +
           '<li><strong>2 pts</strong> — right result, wrong score</li>' +
+          '<li><strong>25 pts</strong> each — correct overall winner &amp; top scorer</li>' +
           '<li>£5 entry · cash prizes for the top 4 · separate Under-12s category</li>' +
         '</ul>' +
-        '<p class="muted" style="font-size:12px;margin-top:10px;">Winners, top scorer and knockout predictions are handled separately by the organiser. This page is just for group-match scorelines.</p>' +
+        '<p class="muted" style="font-size:12px;margin-top:10px;">You can change any of these any time before kick-off — just come back with the same name.</p>' +
       '</div>' +
     '</div>';
 
   var nameEl = document.getElementById("w-name");
   var u12El = document.getElementById("w-u12");
-  if (last){ var pre=loadEntry(last); u12El.checked = pre.category==="Under 12"; }
+  var winnerEl = document.getElementById("w-winner");
+  var topEl = document.getElementById("w-topscorer");
+  function fill(p){ u12El.checked = p.category==="Under 12"; winnerEl.value = p.winner||""; topEl.value = p.topScorer||""; }
+  if (last){ fill(loadEntry(last)); }
+  nameEl.addEventListener("change", function(){ var n=nameEl.value.trim(); if(n) fill(loadEntry(n)); });
   function start(){
     var name = nameEl.value.trim(); if (!name) { nameEl.focus(); return; }
     var loaded = loadEntry(name);
     state.name = name;
     state.category = u12El.checked ? "Under 12" : "Adult";
+    state.winner = winnerEl.value;
+    state.topScorer = topEl.value.trim();
     state.predictions = loaded.predictions || {};
     state.knockout = loaded.knockout || {};
     state.tab = "group";
@@ -476,6 +509,13 @@ function showPredict(){
         '</div>' +
         '<button class="link" id="p-switch">← switch entrant</button>' +
       '</div>' +
+      '<div class="ticket" style="margin-top:10px;padding:9px 12px;">' +
+        '<div class="flex ac jb g6" style="font-size:13px;">' +
+          '<div>🏆 ' + (state.winner ? '<strong>'+esc(state.winner)+'</strong>' : '<span class="muted">winner not set</span>') +
+            ' &nbsp;·&nbsp; 👟 ' + (state.topScorer ? '<strong>'+esc(state.topScorer)+'</strong>' : '<span class="muted">top scorer not set</span>') + '</div>' +
+          '<button class="link" id="p-editpicks">edit</button>' +
+        '</div>' +
+      '</div>' +
       '<div class="tabs">' +
         '<div class="tab" id="tab-group">Group Stage</div>' +
         '<div class="tab" id="tab-ko">Knockouts</div>' +
@@ -488,9 +528,10 @@ function showPredict(){
     '</div><div class="wrapw" style="text-align:right;margin-top:4px;"><span class="muted" id="saved" style="font-size:11px;">Saved automatically</span></div></div>';
 
   document.getElementById("p-switch").addEventListener("click", function(){ persistNow(); showWelcome(); });
+  document.getElementById("p-editpicks").addEventListener("click", function(){ persistNow(); showWelcome(); });
   document.getElementById("p-save").addEventListener("click", function(){ persistNow(); });
   document.getElementById("p-share").addEventListener("click", function(){
-    persistNow(); openShare(buildWhatsApp(state.name, state.category, state.predictions, state.knockout));
+    persistNow(); openShare(buildWhatsApp(state));
   });
   document.getElementById("tab-group").addEventListener("click", function(){ state.tab="group"; renderTab(); });
   document.getElementById("tab-ko").addEventListener("click", function(){ state.tab="ko"; renderTab(); });
@@ -618,7 +659,7 @@ function koClickHandler(e){
 function persistNow(){
   if (saveTimer){ clearTimeout(saveTimer); saveTimer=null; }
   if (!state.name) return;
-  safeSet(nkey(state.name), JSON.stringify({ name:state.name, category:state.category, predictions:state.predictions, knockout:state.knockout, updatedAt:new Date().toISOString() }));
+  safeSet(nkey(state.name), JSON.stringify({ name:state.name, category:state.category, winner:state.winner, topScorer:state.topScorer, predictions:state.predictions, knockout:state.knockout, updatedAt:new Date().toISOString() }));
   safeSet(LS_PREFIX+"last", state.name);
   var t=new Date(); state.saved=t.toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"});
   var s=document.getElementById("saved"); if(s) s.textContent="Saved ✓ "+state.saved;
