@@ -291,7 +291,7 @@ var SCORING = {
   exact: 5, result: 2,        // group score: exact / correct result
   qualifier: 10,              // each correct team reaching the Round of 32
   winner: 25, topScorer: 25,  // pre-tournament winner / Golden Boot
-  ko: { R32: 10, R16: 15, QF: 20, SF: 25, F: 30 } // each correct knockout-round winner
+  koPerCorrect: 2             // each correct knockout-round winner — scored like a correct group result
 };
 function normName(s){ return String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]/g,""); }
 function pairKey(a,b){ return [normName(a),normName(b)].sort().join("|"); }
@@ -334,7 +334,7 @@ function scoreEntry(entry, R){
   KO_ROUNDS.forEach(function(r){
     var adv = (R.advancers && R.advancers[r.key]) || []; if(!adv.length) return;
     var advN = {}; adv.forEach(function(t){ advN[normName(t)]=1; });
-    r.matches.forEach(function(no){ var t=w[no]; if(t && advN[normName(t)]) bd.ko += (SCORING.ko[r.key]||0); });
+    r.matches.forEach(function(no){ var t=w[no]; if(t && advN[normName(t)]) bd.ko += SCORING.koPerCorrect; });
   });
 
   var total = bd.group+bd.qualifiers+bd.ko+bd.winner+bd.topScorer;
@@ -510,6 +510,8 @@ function showWelcome(){
           '<li><strong>5 pts</strong> — exact correct score</li>' +
           '<li><strong>2 pts</strong> — right result, wrong score</li>' +
           '<li><strong>25 pts</strong> each — correct overall winner &amp; top scorer</li>' +
+          '<li><strong>10 pts</strong> — each team correctly reaching the Round of 32</li>' +
+          '<li><strong>2 pts</strong> — each correct knockout-round winner</li>' +
           '<li>£5 entry · cash prizes for the top 4 · separate Under-12s category</li>' +
         '</ul>' +
         '<p class="muted" style="font-size:12px;margin-top:10px;">You can change any of these any time before kick-off — just come back with the same name.</p>' +

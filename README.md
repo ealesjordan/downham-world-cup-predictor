@@ -58,12 +58,13 @@ var SCORING = {
   exact: 5, result: 2,          // group score: exact / right result
   qualifier: 10,                // each correct Round-of-32 team
   winner: 25, topScorer: 25,    // pre-tournament picks
-  ko: { R32: 10, R16: 15, QF: 20, SF: 25, F: 30 } // per correct knockout-round winner
+  koPerCorrect: 2               // each correct knockout-round winner (same as a correct group result)
 };
 ```
 
-⚠️ **The knockout-round points are my defaults** — your cousin's rules never stated them.
-Change them to whatever you agree.
+Knockout picks are winner selections (who advances), so they score like a correct group
+result — **2 points** per correct pick, every round. Change any of these values to whatever
+you agree.
 
 ## Things to check once it's live
 
