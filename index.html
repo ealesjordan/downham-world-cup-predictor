@@ -284,6 +284,66 @@ function computeBracket(preds, winners){
 }
 function koPicked(winners){ var n=0; ALLNOS.forEach(function(no){ if(winners[no]) n++; }); return n; }
 
+/* --------------------------- leaderboard --------------------------- */
+/* Points config — EDIT HERE. Knockout values aren't in the original rules,
+   so these are sensible defaults; change them to whatever you agree. */
+var SCORING = {
+  exact: 5, result: 2,        // group score: exact / correct result
+  qualifier: 10,              // each correct team reaching the Round of 32
+  winner: 25, topScorer: 25,  // pre-tournament winner / Golden Boot
+  ko: { R32: 10, R16: 15, QF: 20, SF: 25, F: 30 } // each correct knockout-round winner
+};
+function normName(s){ return String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]/g,""); }
+function pairKey(a,b){ return [normName(a),normName(b)].sort().join("|"); }
+
+function indexResults(R){
+  var idx = {};
+  (R.groupScores||[]).forEach(function(g){ idx[pairKey(g.home,g.away)] = g; });
+  R._pairIndex = idx; return R;
+}
+function scoreEntry(entry, R){
+  var preds = entry.predictions||{}, w = entry.knockout||{};
+  var bd = { group:0, qualifiers:0, ko:0, winner:0, topScorer:0 };
+
+  MATCHES.forEach(function(m){
+    var p = preds[m.id]; if(!p || p.h===""||p.a==="") return;
+    var act = R._pairIndex[pairKey(m.home,m.away)]; if(!act) return;
+    var ah, aa;
+    if (normName(act.home)===normName(m.home)){ ah=+act.h; aa=+act.a; } else { ah=+act.a; aa=+act.h; }
+    var ph=+p.h, pa=+p.a;
+    if (ph===ah && pa===aa) bd.group += SCORING.exact;
+    else if (Math.sign(ph-pa)===Math.sign(ah-aa)) bd.group += SCORING.result;
+  });
+
+  if (R.qualifiedR32 && R.qualifiedR32.length===32){
+    var br = computeBracket(preds, {});
+    var predQ = {};
+    Object.keys(GROUPS).forEach(function(g){ predQ[normName(br.tables[g][0].team)]=1; predQ[normName(br.tables[g][1].team)]=1; });
+    br.qualThirds.forEach(function(s){ predQ[normName(s.team)]=1; });
+    R.qualifiedR32.forEach(function(t){ if(predQ[normName(t)]) bd.qualifiers += SCORING.qualifier; });
+  }
+
+  if (R.champion && entry.winner && normName(entry.winner)===normName(R.champion)) bd.winner += SCORING.winner;
+
+  if (R.topScorers && R.topScorers.length && entry.topScorer){
+    var maxG = R.topScorers[0].goals;
+    var leaders = R.topScorers.filter(function(s){ return s.goals===maxG; }).map(function(s){ return normName(s.name); });
+    if (leaders.indexOf(normName(entry.topScorer))>=0) bd.topScorer += SCORING.topScorer;
+  }
+
+  KO_ROUNDS.forEach(function(r){
+    var adv = (R.advancers && R.advancers[r.key]) || []; if(!adv.length) return;
+    var advN = {}; adv.forEach(function(t){ advN[normName(t)]=1; });
+    r.matches.forEach(function(no){ var t=w[no]; if(t && advN[normName(t)]) bd.ko += (SCORING.ko[r.key]||0); });
+  });
+
+  var total = bd.group+bd.qualifiers+bd.ko+bd.winner+bd.topScorer;
+  return { points: total, bd: bd };
+}
+function loadJSON(path){
+  return fetch(path, { cache:"no-store" }).then(function(r){ return r.ok ? r.json() : null; }).catch(function(){ return null; });
+}
+
 /* --------------------------- storage --------------------------- */
 var LS_PREFIX = "dtfc-wc26:";
 function nkey(name){ return LS_PREFIX + name.trim().toLowerCase().replace(/\s+/g," "); }
@@ -442,6 +502,7 @@ function showWelcome(){
         '</ul>' +
         '<p class="muted" style="font-size:12px;margin-top:10px;">You can change any of these any time before kick-off — just come back with the same name.</p>' +
       '</div>' +
+      '<button class="btn btn-ghost" id="w-lb" style="margin-top:14px;width:100%;padding:12px;">🏆 View leaderboard</button>' +
     '</div>';
 
   var nameEl = document.getElementById("w-name");
@@ -465,6 +526,7 @@ function showWelcome(){
     showPredict();
   }
   document.getElementById("w-start").addEventListener("click", start);
+  document.getElementById("w-lb").addEventListener("click", showLeaderboard);
   nameEl.addEventListener("keydown", function(e){ if (e.key==="Enter") start(); });
 }
 
@@ -663,6 +725,76 @@ function persistNow(){
   safeSet(LS_PREFIX+"last", state.name);
   var t=new Date(); state.saved=t.toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"});
   var s=document.getElementById("saved"); if(s) s.textContent="Saved ✓ "+state.saved;
+}
+
+/* --------------------------- leaderboard view --------------------------- */
+function showLeaderboard(){
+  state.screen="leaderboard";
+  app.innerHTML = '<div class="wrapw pop" style="padding:18px 14px 60px;">' +
+      '<div class="flex ac jb"><div class="display" style="font-size:24px;color:var(--red);">Leaderboard</div>' +
+      '<button class="link" id="lb-back">← back</button></div>' +
+      '<div id="lb-body"><p class="muted" style="margin-top:16px;">Loading…</p></div>' +
+    '</div>';
+  document.getElementById("lb-back").addEventListener("click", showWelcome);
+  Promise.all([loadJSON("predictions.json"), loadJSON("results.json")]).then(function(res){
+    renderLeaderboard(res[0], res[1]);
+  });
+}
+function renderLeaderboard(preds, results){
+  var body=document.getElementById("lb-body"); if(!body) return;
+  if(!preds || !preds.length){
+    body.innerHTML = '<div class="ticket" style="padding:18px;margin-top:14px;"><p>No entries yet. Once predictions are added to <code>predictions.json</code> in the repo, the table appears here automatically.</p></div>';
+    return;
+  }
+  var R = indexResults(results || { groupScores:[], advancers:{} });
+  var rows = preds.map(function(e){ return { e:e, s:scoreEntry(e,R) }; });
+  rows.sort(function(a,b){ return b.s.points-a.s.points || (a.e.name||"").localeCompare(b.e.name||""); });
+
+  var updated = (results && results.updatedAt) ? new Date(results.updatedAt).toLocaleString() : "no results yet";
+  var played = (results && results.groupScores) ? results.groupScores.length : 0;
+
+  var html = '<p class="muted" style="font-size:12px;margin:8px 0 14px;">Results updated: '+esc(updated)+' · '+played+' group matches in</p><div style="display:grid;gap:8px;">';
+  rows.forEach(function(r,i){
+    var medal = i===0?"🥇":i===1?"🥈":i===2?"🥉":("#"+(i+1));
+    html += '<button class="ticket lb-row" data-i="'+i+'" style="text-align:left;padding:12px 14px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;background:#fff;">' +
+      '<span class="flex ac g8"><span style="font-family:\'Anton\',sans-serif;font-size:18px;min-width:34px;">'+medal+'</span>' +
+      '<span style="font-weight:700;">'+esc(r.e.name||"?")+(r.e.category==="Under 12"?' <span class="md-pill">U12</span>':'')+'</span></span>' +
+      '<span style="font-family:\'Anton\',sans-serif;font-size:20px;color:var(--red);">'+r.s.points+'<span style="font-size:11px;color:#9a8d70;"> pts</span></span>' +
+      '</button>';
+  });
+  html += '</div><p class="muted" style="font-size:11px;margin-top:14px;">Tap anyone to see their predictions and points breakdown.</p>';
+  body.innerHTML = html;
+  body.querySelectorAll(".lb-row").forEach(function(btn){
+    btn.addEventListener("click", function(){ openPersonModal(rows[+btn.getAttribute("data-i")]); });
+  });
+}
+function openPersonModal(row){
+  var e=row.e, bd=row.s.bd;
+  var br = computeBracket(e.predictions||{}, {});
+  var q=[]; Object.keys(GROUPS).forEach(function(g){ q.push(br.tables[g][0].team, br.tables[g][1].team); }); br.qualThirds.forEach(function(s){ q.push(s.team); });
+  var lines = MATCHES.filter(function(m){ var p=(e.predictions||{})[m.id]; return p&&p.h!==""&&p.a!==""; })
+     .map(function(m){ var p=e.predictions[m.id]; return m.home+" "+p.h+"–"+p.a+" "+m.away; });
+  var koLines = KO_ROUNDS.filter(function(r){ return r.key!=="F"; }).map(function(r){
+     var ws=r.matches.map(function(no){ return (e.knockout||{})[no]; }).filter(Boolean);
+     return ws.length ? (r.label+": "+ws.join(", ")) : null;
+  }).filter(Boolean);
+  var champ=(e.knockout||{})[103];
+
+  var html='<div class="flex ac jb" style="margin-bottom:8px;"><div class="display" style="font-size:20px;color:var(--red);">'+esc(e.name||"?")+'</div><button class="link" id="pm-close">Close</button></div>';
+  html+='<div style="overflow:auto;">';
+  html+='<div class="ticket" style="padding:12px 14px;margin-bottom:10px;font-size:14px;">🏆 Winner: <strong>'+esc(e.winner||"—")+'</strong> &nbsp;·&nbsp; 👟 Top scorer: <strong>'+esc(e.topScorer||"—")+'</strong>'+(champ?'<div style="margin-top:4px;">Predicted champion (bracket): <strong>'+esc(champ)+'</strong></div>':'')+'</div>';
+  html+='<div class="ticket" style="padding:12px 14px;margin-bottom:10px;font-size:13px;"><div style="font-weight:700;margin-bottom:6px;">Points: '+row.s.points+'</div>Group scores '+bd.group+' · Qualifiers '+bd.qualifiers+' · Knockouts '+bd.ko+' · Winner '+bd.winner+' · Top scorer '+bd.topScorer+'</div>';
+  html+='<div class="ticket" style="padding:12px 14px;margin-bottom:10px;font-size:13px;"><div style="font-weight:700;margin-bottom:6px;">Predicted Round of 32 (32)</div>'+esc(q.join(", "))+'</div>';
+  if(koLines.length) html+='<div class="ticket" style="padding:12px 14px;margin-bottom:10px;font-size:13px;"><div style="font-weight:700;margin-bottom:6px;">Knockout picks</div>'+esc(koLines.join(" · "))+'</div>';
+  html+='<div class="ticket" style="padding:12px 14px;font-size:13px;"><div style="font-weight:700;margin-bottom:6px;">Group scorelines ('+lines.length+')</div>'+(lines.length?esc(lines.join("  ·  ")):'<span class="muted">none yet</span>')+'</div>';
+  html+='</div>';
+
+  var ov=document.createElement("div"); ov.className="overlay";
+  var sheet=document.createElement("div"); sheet.className="sheet pop"; sheet.innerHTML=html;
+  ov.appendChild(sheet); document.body.appendChild(ov);
+  function close(){ document.body.removeChild(ov); }
+  ov.addEventListener("click", function(ev){ if(ev.target===ov) close(); });
+  sheet.querySelector("#pm-close").addEventListener("click", close);
 }
 
 /* ----------------------------- init ----------------------------- */

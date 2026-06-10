@@ -1,0 +1,44 @@
+name: Update World Cup results
+
+on:
+  schedule:
+    # Once a day at 06:00 UTC. During the tournament you can add more lines,
+    # e.g. "0 */6 * * *" for every 6 hours. Times are UTC.
+    - cron: "0 6 * * *"
+  workflow_dispatch: {}   # lets you run it manually from the Actions tab
+
+permissions:
+  contents: write          # needed to commit results.json back to the repo
+
+concurrency:
+  group: update-results
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Fetch results
+        env:
+          API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
+        run: node scripts/fetch-results.mjs
+
+      - name: Commit if changed
+        run: |
+          if [ -n "$(git status --porcelain results.json)" ]; then
+            git config user.name "results-bot"
+            git config user.email "actions@users.noreplace.github.com"
+            git add results.json
+            git commit -m "Update results ($(date -u +%Y-%m-%dT%H:%MZ))"
+            git push
+          else
+            echo "No results change to commit."
+          fi

@@ -1,0 +1,17 @@
+[
+  {
+    "name": "Sample Entry",
+    "category": "Adult",
+    "winner": "England",
+    "topScorer": "Harry Kane",
+    "predictions": {
+      "A-1-0": { "h": "2", "a": "1" },
+      "A-1-1": { "h": "1", "a": "1" },
+      "L-1-0": { "h": "3", "a": "0" }
+    },
+    "knockout": {
+      "73": "Switzerland",
+      "103": "England"
+    }
+  }
+]
