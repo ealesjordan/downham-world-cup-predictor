@@ -344,6 +344,18 @@ function loadJSON(path){
   return fetch(path, { cache:"no-store" }).then(function(r){ return r.ok ? r.json() : null; }).catch(function(){ return null; });
 }
 
+// Committed predictions.json, cached, indexed by lower-cased name (for front-screen loading)
+var filePreds = null, filePredsByName = {};
+function lc(s){ return String(s||"").trim().toLowerCase().replace(/\s+/g," "); }
+function loadFilePreds(){
+  return loadJSON("predictions.json").then(function(arr){
+    filePreds = Array.isArray(arr) ? arr : [];
+    filePredsByName = {};
+    filePreds.forEach(function(e){ if(e && e.name) filePredsByName[lc(e.name)] = e; });
+    return filePreds;
+  });
+}
+
 /* --------------------------- storage --------------------------- */
 var LS_PREFIX = "dtfc-wc26:";
 function nkey(name){ return LS_PREFIX + name.trim().toLowerCase().replace(/\s+/g," "); }
@@ -510,21 +522,41 @@ function showWelcome(){
   var u12El = document.getElementById("w-u12");
   var winnerEl = document.getElementById("w-winner");
   var topEl = document.getElementById("w-topscorer");
-  function fill(p){ u12El.checked = p.category==="Under 12"; winnerEl.value = p.winner||""; topEl.value = p.topScorer||""; }
-  if (last){ fill(loadEntry(last)); }
-  nameEl.addEventListener("change", function(){ var n=nameEl.value.trim(); if(n) fill(loadEntry(n)); });
+  var winnerTouched=false, topTouched=false, u12Touched=false;
+
+  // A name match in predictions.json wins; otherwise fall back to this device's saved entry.
+  function baseFor(name){ return filePredsByName[lc(name)] || loadEntry(name); }
+  function fill(name){
+    var p = baseFor(name);
+    u12El.checked = (p.category==="Under 12");
+    winnerEl.value = p.winner||"";
+    topEl.value = p.topScorer||"";
+    winnerTouched=false; topTouched=false; u12Touched=false;
+  }
+  winnerEl.addEventListener("change", function(){ winnerTouched=true; });
+  topEl.addEventListener("input", function(){ topTouched=true; });
+  u12El.addEventListener("change", function(){ u12Touched=true; });
+  nameEl.addEventListener("change", function(){ var n=nameEl.value.trim(); if(n) fill(n); });
+  if (last){ fill(last); }
+  loadFilePreds().then(function(){ var n=nameEl.value.trim(); if(n && !winnerTouched && !topTouched && !u12Touched) fill(n); });
+
+  function finalize(name){
+    var fileE = filePredsByName[lc(name)];
+    var base = fileE || loadEntry(name);
+    state.name = name;
+    state.winner = winnerTouched ? winnerEl.value : (base.winner||"");
+    state.topScorer = topTouched ? topEl.value.trim() : (base.topScorer||"");
+    state.category = u12Touched ? (u12El.checked ? "Under 12" : "Adult") : (base.category||"Adult");
+    state.predictions = base.predictions || {};
+    state.knockout = base.knockout || {};
+    state.tab = "group"; state.fGroup="all"; state.fMd="all"; state.saved="";
+    showPredict();
+    if (fileE){ var s=document.getElementById("saved"); if(s) s.textContent="Loaded your predictions ✓"; }
+  }
   function start(){
     var name = nameEl.value.trim(); if (!name) { nameEl.focus(); return; }
-    var loaded = loadEntry(name);
-    state.name = name;
-    state.category = u12El.checked ? "Under 12" : "Adult";
-    state.winner = winnerEl.value;
-    state.topScorer = topEl.value.trim();
-    state.predictions = loaded.predictions || {};
-    state.knockout = loaded.knockout || {};
-    state.tab = "group";
-    state.fGroup="all"; state.fMd="all"; state.saved="";
-    showPredict();
+    if (filePreds===null) loadFilePreds().then(function(){ finalize(name); });
+    else finalize(name);
   }
   document.getElementById("w-start").addEventListener("click", start);
   document.getElementById("w-lb").addEventListener("click", showLeaderboard);
