@@ -34,8 +34,8 @@ jobs:
       - name: Commit if changed
         run: |
           if [ -n "$(git status --porcelain results.json)" ]; then
-            git config user.name "results-bot"
-            git config user.email "actions@users.noreplace.github.com"
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
             git add results.json
             git commit -m "Update results ($(date -u +%Y-%m-%dT%H:%MZ))"
             git push
