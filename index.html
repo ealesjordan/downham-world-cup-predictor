@@ -75,7 +75,7 @@ body{
 .sheet{ background:var(--cream); width:100%; max-width:620px; border-top-left-radius:18px; border-top-right-radius:18px; padding:16px 16px 20px; max-height:86vh; display:flex; flex-direction:column; }
 ul{ margin:10px 0 0; padding-left:18px; line-height:1.6; }
 .tabs{ display:flex; gap:6px; margin-top:14px; }
-.tab{ flex:1; text-align:center; padding:10px; border-radius:10px 10px 0 0; border:1px solid #ddd2b8; border-bottom:none; background:#efe7d4; color:#6b5e44; font-weight:700; font-family:'Anton',sans-serif; letter-spacing:.02em; font-size:15px; cursor:pointer; }
+.tab{ flex:1; text-align:center; padding:9px 4px; border-radius:10px 10px 0 0; border:1px solid #ddd2b8; border-bottom:none; background:#efe7d4; color:#6b5e44; font-weight:700; font-family:'Anton',sans-serif; letter-spacing:.02em; font-size:14px; cursor:pointer; min-width:0; }
 .tab.on{ background:var(--red); color:#fff; border-color:var(--red); }
 .tab.lock{ opacity:.6; }
 .koround{ margin-top:18px; }
@@ -284,6 +284,50 @@ function computeBracket(preds, winners){
 }
 function koPicked(winners){ var n=0; ALLNOS.forEach(function(no){ if(winners[no]) n++; }); return n; }
 
+/* --- Real-results helpers: knockout rounds only open once results.json reaches them --- */
+function actualGroupPreds(R){
+  var preds = {};
+  if(!R) return preds;
+  if(!R._pairIndex) indexResults(R);
+  MATCHES.forEach(function(m){
+    var act = R._pairIndex[pairKey(m.home, m.away)]; if(!act) return;
+    var ah, aa;
+    if (normName(act.home)===normName(m.home)){ ah=act.h; aa=act.a; } else { ah=act.a; aa=act.h; }
+    preds[m.id] = { h:String(ah), a:String(aa) };
+  });
+  return preds;
+}
+function openRounds(R){
+  var open = { R32:false, R16:false, QF:false, SF:false, F:false };
+  if(!R) return open;
+  if((R.qualifiedR32||[]).length === 32) open.R32 = true;
+  var adv = R.advancers || {};
+  if((adv.R32||[]).length === 16) open.R16 = true;
+  if((adv.R16||[]).length === 8)  open.QF  = true;
+  if((adv.QF ||[]).length === 4)  open.SF  = true;
+  if((adv.SF ||[]).length === 2)  open.F   = true;
+  return open;
+}
+/* Round-by-round resolve: feeds actual group scores in, then progressively
+   matches each round's advancers to deduce which team won each match number. */
+function actualBracket(R){
+  var gp = actualGroupPreds(R);
+  var winners = {};
+  ['R32','R16','QF','SF','F'].forEach(function(key){
+    var br = computeBracket(gp, winners);
+    var round = null; KO_ROUNDS.forEach(function(r){ if(r.key===key) round=r; });
+    var adv = (R && R.advancers && R.advancers[key]) || [];
+    if(!adv.length) return;
+    var advSet = {}; adv.forEach(function(t){ advSet[normName(t)]=1; });
+    round.matches.forEach(function(no){
+      var t = br.teams[no] || [null,null];
+      if (t[0] && advSet[normName(t[0])]) winners[no] = t[0];
+      else if (t[1] && advSet[normName(t[1])]) winners[no] = t[1];
+    });
+  });
+  return computeBracket(gp, winners);
+}
+
 /* --------------------------- leaderboard --------------------------- */
 /* Points config — EDIT HERE. Knockout values aren't in the original rules,
    so these are sensible defaults; change them to whatever you agree. */
@@ -355,6 +399,14 @@ function loadFilePreds(){
     return filePreds;
   });
 }
+// Committed results.json — drives which knockout rounds are currently open
+var fileResults = null;
+function loadFileResults(){
+  return loadJSON("results.json").then(function(r){
+    fileResults = r ? indexResults(r) : null;
+    return fileResults;
+  });
+}
 
 /* --------------------------- storage --------------------------- */
 var LS_PREFIX = "dtfc-wc26:";
@@ -363,7 +415,7 @@ function safeGet(k){ try { return localStorage.getItem(k); } catch(e){ return nu
 function safeSet(k,v){ try { localStorage.setItem(k,v); } catch(e){} }
 
 /* ----------------------------- state ---------------------------- */
-var state = { screen:"welcome", name:"", category:"Adult", winner:"", topScorer:"", predictions:{}, knockout:{}, tab:"group", fGroup:"all", fMd:"all", saved:"" };
+var state = { screen:"welcome", name:"", category:"Adult", winner:"", topScorer:"", predictions:{}, knockout:{}, tab:"groups", fGroup:"all", fMd:"all", saved:"" };
 var saveTimer = null;
 
 function loadEntry(name){
@@ -408,16 +460,6 @@ function buildWhatsApp(entry){
   }
   L.push("");
   L.push(total ? ("_" + total + " of " + TOTAL + " group matches predicted_") : "_No predictions filled in yet_");
-
-  // Once every group match is in, list the 32 qualifiers
-  if (total === TOTAL){
-    var br = computeBracket(preds, {});
-    L.push(""); L.push("*Teams through to the Round of 32* (32)");
-    Object.keys(GROUPS).forEach(function(g){
-      L.push(g + ": " + br.tables[g][0].team + ", " + br.tables[g][1].team);
-    });
-    L.push("Best 3rd-placed: " + br.qualThirds.map(function(s){ return s.team; }).join(", "));
-  }
 
   if (koPicked(winners) > 0){
     L.push(""); L.push("*— Knockout predictions —*");
@@ -540,7 +582,9 @@ function showWelcome(){
   u12El.addEventListener("change", function(){ u12Touched=true; });
   nameEl.addEventListener("change", function(){ var n=nameEl.value.trim(); if(n) fill(n); });
   if (last){ fill(last); }
-  loadFilePreds().then(function(){ var n=nameEl.value.trim(); if(n && !winnerTouched && !topTouched && !u12Touched) fill(n); });
+  Promise.all([loadFilePreds(), loadFileResults()]).then(function(){
+    var n=nameEl.value.trim(); if(n && !winnerTouched && !topTouched && !u12Touched) fill(n);
+  });
 
   function finalize(name){
     var fileE = filePredsByName[lc(name)];
@@ -557,7 +601,10 @@ function showWelcome(){
   }
   function start(){
     var name = nameEl.value.trim(); if (!name) { nameEl.focus(); return; }
-    if (filePreds===null) loadFilePreds().then(function(){ finalize(name); });
+    var pending = [];
+    if (filePreds===null) pending.push(loadFilePreds());
+    if (fileResults===null) pending.push(loadFileResults());
+    if (pending.length) Promise.all(pending).then(function(){ finalize(name); });
     else finalize(name);
   }
   document.getElementById("w-start").addEventListener("click", start);
@@ -593,7 +640,6 @@ function updateProgress(){
   var n = doneCount();
   var b = document.getElementById("pbar"); if (b) b.style.width = (n/TOTAL*100) + "%";
   var c = document.getElementById("pcount"); if (c) c.textContent = (state.category==="Under 12"?"Under-12s entry · ":"") + n + " of " + TOTAL + " matches predicted";
-  var kt = document.getElementById("tab-ko"); if (kt) kt.className = "tab" + (state.tab==="ko"?" on":"") + (n<TOTAL?" lock":"");
 }
 
 function showPredict(){
@@ -614,9 +660,13 @@ function showPredict(){
           '<button class="link" id="p-editpicks">edit</button>' +
         '</div>' +
       '</div>' +
-      '<div class="tabs">' +
-        '<div class="tab" id="tab-group">Group Stage</div>' +
-        '<div class="tab" id="tab-ko">Knockouts</div>' +
+      '<div class="tabs" id="ko-tabs">' +
+        '<div class="tab" id="tab-groups">Groups</div>' +
+        '<div class="tab" id="tab-R32">R32</div>' +
+        '<div class="tab" id="tab-R16">R16</div>' +
+        '<div class="tab" id="tab-QF">QF</div>' +
+        '<div class="tab" id="tab-SF">SF</div>' +
+        '<div class="tab" id="tab-F">Final</div>' +
       '</div>' +
       '<div id="tabcontent"></div>' +
     '</div>' +
@@ -631,16 +681,26 @@ function showPredict(){
   document.getElementById("p-share").addEventListener("click", function(){
     persistNow(); openShare(buildWhatsApp(state));
   });
-  document.getElementById("tab-group").addEventListener("click", function(){ state.tab="group"; renderTab(); });
-  document.getElementById("tab-ko").addEventListener("click", function(){ state.tab="ko"; renderTab(); });
+  ['groups','R32','R16','QF','SF','F'].forEach(function(k){
+    document.getElementById('tab-'+k).addEventListener("click", function(){
+      if (k!=='groups' && !openRounds(fileResults)[k]) return; // locked
+      state.tab=k; renderTab();
+    });
+  });
   document.getElementById("tabcontent").addEventListener("click", koClickHandler);
 
   renderTab();
 }
 
 function renderTab(){
-  document.getElementById("tab-group").className = "tab" + (state.tab==="group"?" on":"");
-  if (state.tab==="group") renderGroupTab(); else renderKOTab();
+  var or = openRounds(fileResults);
+  ['groups','R32','R16','QF','SF','F'].forEach(function(k){
+    var el = document.getElementById('tab-'+k); if(!el) return;
+    var locked = (k!=='groups' && !or[k]);
+    el.className = 'tab' + (state.tab===k?' on':'') + (locked?' lock':'');
+  });
+  if (state.tab==='groups') renderGroupTab();
+  else renderRoundTab(state.tab);
   updateProgress();
 }
 
@@ -693,57 +753,60 @@ function seedLabel(ref){
   if (ref.t==="3")  return "3rd";
   return "";
 }
-function renderKOTab(){
+var ROUND_LOCK_MSG = {
+  R32: { head:"Round of 32 isn’t open yet", body:"Once the group stage finishes and we know the 32 qualifiers, the actual Round of 32 ties will appear here for you to pick." },
+  R16: { head:"Round of 16 isn’t open yet", body:"Once every Round of 32 tie is decided, the eight surviving matchups will appear here." },
+  QF:  { head:"Quarter-finals aren’t open yet", body:"Once the Round of 16 is finished, the four quarter-final ties will appear here." },
+  SF:  { head:"Semi-finals aren’t open yet", body:"Once the quarters are done, the two semi-finals will appear here." },
+  F:   { head:"Final isn’t open yet", body:"Once the semi-finals are decided, the Final will appear here for your champion pick." }
+};
+function renderRoundTab(key){
   var tc = document.getElementById("tabcontent");
-  var done = doneCount();
-  if (done < TOTAL){
+  var or = openRounds(fileResults);
+  if (!or[key]){
+    var m = ROUND_LOCK_MSG[key] || {head:"Locked", body:""};
     tc.innerHTML =
       '<div class="locked" style="border:1px solid #ddd2b8;border-top:none;border-radius:0 0 10px 10px;background:rgba(255,255,255,.4);">' +
         '<div style="font-size:34px;">🔒</div>' +
-        '<div class="display" style="font-size:20px;color:var(--red);margin-top:6px;">Finish the group stage first</div>' +
-        '<p class="muted" style="font-size:14px;margin-top:8px;">Predict all '+TOTAL+' group matches and we\'ll work out who qualifies, build your bracket, and unlock the knockouts.</p>' +
-        '<p style="font-weight:700;margin-top:10px;">'+done+' / '+TOTAL+' done — '+(TOTAL-done)+' to go</p>' +
-        '<button class="btn btn-ghost" id="ko-goback" style="margin-top:12px;padding:10px 16px;">← Back to group stage</button>' +
+        '<div class="display" style="font-size:20px;color:var(--red);margin-top:6px;">'+esc(m.head)+'</div>' +
+        '<p class="muted" style="font-size:14px;margin-top:8px;max-width:420px;margin-left:auto;margin-right:auto;">'+esc(m.body)+'</p>' +
+        '<button class="btn btn-ghost" id="ko-goback" style="margin-top:14px;padding:10px 16px;">← Back to group stage</button>' +
       '</div>';
-    document.getElementById("ko-goback").addEventListener("click", function(){ state.tab="group"; renderTab(); });
+    document.getElementById("ko-goback").addEventListener("click", function(){ state.tab="groups"; renderTab(); });
     return;
   }
 
-  var br = computeBracket(state.predictions, state.knockout);
+  var br = actualBracket(fileResults);
   var defByNo = {}; R32DEF.forEach(function(d){ defByNo[d.m]=d; });
-
-  var qualLine = br.qualThirds.map(function(s){ return s.team+" ("+s.group+")"; }).join(", ");
+  var round = null; KO_ROUNDS.forEach(function(r){ if(r.key===key) round=r; });
+  var picked = 0; round.matches.forEach(function(no){ if(state.knockout[no]) picked++; });
 
   var html = '<div style="border:1px solid #ddd2b8;border-top:none;border-radius:0 0 10px 10px;padding:14px;background:rgba(255,255,255,.4);">';
-  html += '<p style="font-size:13px;line-height:1.5;"><strong>Your qualifiers are in.</strong> Top two from each group go through, plus the eight best third-placed teams. Tap the team you think wins each tie — winners carry into the next round.</p>';
-  html += '<p class="muted" style="font-size:11px;margin-top:8px;line-height:1.5;"><strong>Best third-placed (yours):</strong> '+esc(qualLine)+'</p>';
-  html += '<div id="kopicks" style="font-size:12px;font-weight:700;color:#6b5e44;margin-top:10px;"></div>';
+  html += '<p style="font-size:13px;line-height:1.5;"><strong>'+esc(round.label)+'.</strong> Tap the team you think wins each tie. These are the actual teams left in the tournament.</p>';
+  html += '<div id="kopicks" style="font-size:12px;font-weight:700;color:#6b5e44;margin-top:10px;">'+picked+' of '+round.matches.length+' picked</div>';
 
-  var champ = state.knockout[103];
-  if (champ){
-    html += '<div class="champ"><div style="font-size:12px;letter-spacing:.1em;opacity:.85;">YOUR WORLD CUP WINNER</div><div class="display">'+(FLAGS[champ]||"")+' '+esc(champ)+'</div></div>';
+  if (key==="F"){
+    var champ = state.knockout[103];
+    if (champ){
+      html += '<div class="champ"><div style="font-size:12px;letter-spacing:.1em;opacity:.85;">YOUR WORLD CUP WINNER</div><div class="display">'+(FLAGS[champ]||"")+' '+esc(champ)+'</div></div>';
+    }
   }
 
-  KO_ROUNDS.forEach(function(r){
-    html += '<div class="koround"><div class="rh">'+r.label+'</div>';
-    r.matches.forEach(function(no){
-      var t = br.teams[no] || [null,null];
-      var w = state.knockout[no] || null;
-      var sa = "", sb = "";
-      if (no<=88){ sa=seedLabel(defByNo[no].a); sb=seedLabel(defByNo[no].b); }
-      else { sa="W"+LATERMAP[no].a; sb="W"+LATERMAP[no].b; }
-      html += '<div class="ko-match">' +
-        '<div class="ko-mno">Match '+no+'</div>' +
-        koTeamRow(t[0], sa, no, w && w===t[0]) +
-        koTeamRow(t[1], sb, no, w && w===t[1]) +
-        '</div>';
-    });
-    html += '</div>';
+  html += '<div class="koround">';
+  round.matches.forEach(function(no){
+    var t = br.teams[no] || [null,null];
+    var w = state.knockout[no] || null;
+    var sa = "", sb = "";
+    if (no<=88){ sa=seedLabel(defByNo[no].a); sb=seedLabel(defByNo[no].b); }
+    else { sa="W"+LATERMAP[no].a; sb="W"+LATERMAP[no].b; }
+    html += '<div class="ko-match">' +
+      '<div class="ko-mno">Match '+no+'</div>' +
+      koTeamRow(t[0], sa, no, w && w===t[0]) +
+      koTeamRow(t[1], sb, no, w && w===t[1]) +
+      '</div>';
   });
-  html += '</div>';
+  html += '</div></div>';
   tc.innerHTML = html;
-
-  document.getElementById("kopicks").textContent = "Bracket: " + koPicked(state.knockout) + " of " + KO_TOTAL + " picks made";
 }
 function koClickHandler(e){
   var btn = e.target.closest(".ko-team"); if (!btn || btn.classList.contains("tbd")) return;
@@ -752,7 +815,7 @@ function koClickHandler(e){
   if (state.knockout[no] === team) { delete state.knockout[no]; } // tap again to clear
   else { state.knockout[no] = team; }
   persist();
-  renderKOTab(); // recompute downstream + re-render
+  renderRoundTab(state.tab);
 }
 function persistNow(){
   if (saveTimer){ clearTimeout(saveTimer); saveTimer=null; }
