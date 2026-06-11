@@ -1,5 +1,7 @@
 # Downham Town FC — World Cup 2026 Predictor & Leaderboard
 
+**Live site: https://ealesjordan.github.io/downham-world-cup-predictor/**
+
 A single-page predictor (`index.html`) plus an auto-updating leaderboard driven by a
 daily GitHub Action that pulls real results from API-Football.
 
