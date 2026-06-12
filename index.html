@@ -559,6 +559,7 @@ function showWelcome(){
         '<p class="muted" style="font-size:12px;margin-top:10px;">You can change any of these any time before kick-off — just come back with the same name.</p>' +
       '</div>' +
       '<button class="btn btn-ghost" id="w-lb" style="margin-top:14px;width:100%;padding:12px;">🏆 View leaderboard</button>' +
+      '<button class="btn btn-ghost" id="w-daily" style="margin-top:8px;width:100%;padding:12px;">📅 Today’s predictions</button>' +
       '<div style="text-align:center;margin-top:14px;"><button class="link" id="w-og" style="font-size:12px;">Organiser: import predictions</button></div>' +
     '</div>';
 
@@ -609,6 +610,7 @@ function showWelcome(){
   }
   document.getElementById("w-start").addEventListener("click", start);
   document.getElementById("w-lb").addEventListener("click", showLeaderboard);
+  document.getElementById("w-daily").addEventListener("click", showDailyPredictions);
   document.getElementById("w-og").addEventListener("click", showOrganiser);
   nameEl.addEventListener("keydown", function(e){ if (e.key==="Enter") start(); });
 }
@@ -837,6 +839,13 @@ function showLeaderboard(){
   document.getElementById("lb-back").addEventListener("click", showWelcome);
   Promise.all([loadJSON("predictions.json"), loadJSON("results.json")]).then(function(res){
     renderLeaderboard(res[0], res[1]);
+  });
+}
+function showDailyPredictions(){
+  Promise.all([loadJSON("predictions.json"), loadJSON("results.json")]).then(function(res){
+    var preds = res[0] || [];
+    if(!preds.length){ alert("No predictions have been added yet."); return; }
+    openDailyModal(preds, indexResults(res[1] || { groupScores:[], advancers:{} }));
   });
 }
 function renderLeaderboard(preds, results){
