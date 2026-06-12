@@ -2,9 +2,10 @@ name: Update World Cup results
 
 on:
   schedule:
-    # Once a day at 06:00 UTC. During the tournament you can add more lines,
-    # e.g. "0 */6 * * *" for every 6 hours. Times are UTC.
-    - cron: "0 6 * * *"
+    # Every 2 hours (UTC) during the tournament — results come from ESPN's free
+    # public API, so there's no key or quota to worry about. Drop back to e.g.
+    # "0 6 * * *" (daily) once the tournament is over.
+    - cron: "0 */2 * * *"
   workflow_dispatch: {}   # lets you run it manually from the Actions tab
 
 permissions:
@@ -27,8 +28,6 @@ jobs:
           node-version: "20"
 
       - name: Fetch results
-        env:
-          API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
         run: node scripts/fetch-results.mjs
 
       - name: Commit if changed

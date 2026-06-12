@@ -12,8 +12,8 @@ daily GitHub Action that pulls real results from API-Football.
 | `index.html` | The app: predictions, WhatsApp export, and the Leaderboard view. |
 | `predictions.json` | Everyone's entries (the "seed"). An array of entry objects. |
 | `results.json` | Actual results, written by the GitHub Action. Don't hand-edit. |
-| `scripts/fetch-results.mjs` | Fetches results from API-Football and writes `results.json`. |
-| `.github/workflows/update-results.yml` | Runs the script daily + on manual trigger. |
+| `scripts/fetch-results.mjs` | Fetches results from ESPN's free public API and writes `results.json`. |
+| `.github/workflows/update-results.yml` | Runs the script every 2 hours + on manual trigger. |
 
 ## One-time setup
 
@@ -21,11 +21,10 @@ daily GitHub Action that pulls real results from API-Football.
    folder structure: `scripts/…` and `.github/workflows/…`).
 2. **Turn on GitHub Pages**: Settings → Pages → deploy from `main`, root. You'll get a
    link like `https://<you>.github.io/<repo>/` — that's what you share.
-3. **Get a free API key**: register at `dashboard.api-football.com`, copy your API key.
-4. **Add it as a secret** (never put it in any file): Settings → Secrets and variables →
-   Actions → New repository secret. Name it exactly `API_FOOTBALL_KEY`, paste the key.
-5. **Enable Actions** if prompted, then open the **Actions** tab → "Update World Cup
-   results" → **Run workflow** to do the first fetch. After that it runs daily at 06:00 UTC.
+3. **No API key needed.** Results come from ESPN's free public scoreboard API
+   (`site.api.espn.com/.../soccer/fifa.world/scoreboard`) — no registration, no secret.
+4. **Enable Actions** if prompted, then open the **Actions** tab → "Update World Cup
+   results" → **Run workflow** to do the first fetch. After that it runs every 2 hours.
 
 ## How predictions get in
 
@@ -75,10 +74,12 @@ you agree.
   prints `⚠ Unmapped team names: …`, add those to the `ALIASES` map in
   `scripts/fetch-results.mjs`. This is the most likely thing to need a tweak.
 - **Knockout winners** are scored on who actually advanced (including extra time/penalties).
-- **Top scorer** is matched by name text, so spelling matters; it's also provisional until
-  the tournament ends.
+- **Top scorer** isn't currently fetched — ESPN's scoreboard endpoint doesn't carry
+  tournament top-scorer stats, so `topScorers` is left empty (and any value you set by hand
+  in `results.json` is preserved across runs). It can be wired up later via ESPN's core API.
 
 ## Cadence
 
-The workflow runs once a day and on demand (Actions → Run workflow). To refresh more often
-during the tournament, add another cron line in the workflow, e.g. `- cron: "0 */6 * * *"`.
+The workflow runs every 2 hours and on demand (Actions → Run workflow). Adjust the `cron`
+line in the workflow to refresh more or less often (e.g. `- cron: "0 6 * * *"` for daily
+once the tournament is over).
