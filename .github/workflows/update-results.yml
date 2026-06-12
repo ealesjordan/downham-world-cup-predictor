@@ -2,10 +2,11 @@ name: Update World Cup results
 
 on:
   schedule:
-    # Every 2 hours (UTC) during the tournament — results come from ESPN's free
-    # public API, so there's no key or quota to worry about. Drop back to e.g.
-    # "0 6 * * *" (daily) once the tournament is over.
-    - cron: "0 */2 * * *"
+    # Twice daily (UTC): 06:30 and 21:30. Results come from ESPN's free public
+    # API, so there's no key or quota to worry about. Add/adjust cron lines to
+    # refresh more often during the tournament.
+    - cron: "30 6 * * *"
+    - cron: "30 21 * * *"
   workflow_dispatch: {}   # lets you run it manually from the Actions tab
 
 permissions:

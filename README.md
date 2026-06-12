@@ -13,7 +13,7 @@ daily GitHub Action that pulls real results from API-Football.
 | `predictions.json` | Everyone's entries (the "seed"). An array of entry objects. |
 | `results.json` | Actual results, written by the GitHub Action. Don't hand-edit. |
 | `scripts/fetch-results.mjs` | Fetches results from ESPN's free public API and writes `results.json`. |
-| `.github/workflows/update-results.yml` | Runs the script every 2 hours + on manual trigger. |
+| `.github/workflows/update-results.yml` | Runs the script twice daily (06:30 & 21:30 UTC) + on manual trigger. |
 
 ## One-time setup
 
@@ -24,7 +24,7 @@ daily GitHub Action that pulls real results from API-Football.
 3. **No API key needed.** Results come from ESPN's free public scoreboard API
    (`site.api.espn.com/.../soccer/fifa.world/scoreboard`) — no registration, no secret.
 4. **Enable Actions** if prompted, then open the **Actions** tab → "Update World Cup
-   results" → **Run workflow** to do the first fetch. After that it runs every 2 hours.
+   results" → **Run workflow** to do the first fetch. After that it runs at 06:30 & 21:30 UTC.
 
 ## How predictions get in
 
@@ -80,6 +80,5 @@ you agree.
 
 ## Cadence
 
-The workflow runs every 2 hours and on demand (Actions → Run workflow). Adjust the `cron`
-line in the workflow to refresh more or less often (e.g. `- cron: "0 6 * * *"` for daily
-once the tournament is over).
+The workflow runs twice daily at 06:30 and 21:30 UTC, and on demand (Actions → Run
+workflow). Adjust the `cron` lines in the workflow to refresh more or less often.
