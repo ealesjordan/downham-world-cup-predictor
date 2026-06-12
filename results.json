@@ -1,11 +1,17 @@
 {
-  "updatedAt": "2026-06-12T00:00:00.000Z",
+  "updatedAt": "2026-06-12T06:23:27.759Z",
   "groupScores": [
     {
       "home": "Mexico",
       "away": "South Africa",
       "h": 2,
       "a": 0
+    },
+    {
+      "home": "South Korea",
+      "away": "Czechia",
+      "h": 2,
+      "a": 1
     }
   ],
   "qualifiedR32": [],
