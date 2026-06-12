@@ -852,7 +852,9 @@ function renderLeaderboard(preds, results){
   var updated = (results && results.updatedAt) ? new Date(results.updatedAt).toLocaleString() : "no results yet";
   var played = (results && results.groupScores) ? results.groupScores.length : 0;
 
-  var html = '<p class="muted" style="font-size:12px;margin:8px 0 14px;">Results updated: '+esc(updated)+' · '+played+' group matches in</p><div style="display:grid;gap:8px;">';
+  var html = '<p class="muted" style="font-size:12px;margin:8px 0 10px;">Results updated: '+esc(updated)+' · '+played+' group matches in</p>' +
+    '<button class="btn btn-ghost" id="lb-daily" style="width:100%;padding:11px;margin:0 0 14px;">📅 See everyone’s predictions by day</button>' +
+    '<div style="display:grid;gap:8px;">';
   rows.forEach(function(r,i){
     var medal = i===0?"🥇":i===1?"🥈":i===2?"🥉":("#"+(i+1));
     html += '<button class="ticket lb-row" data-i="'+i+'" style="text-align:left;padding:12px 14px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;background:#fff;">' +
@@ -863,6 +865,8 @@ function renderLeaderboard(preds, results){
   });
   html += '</div><p class="muted" style="font-size:11px;margin-top:14px;">Tap anyone to see their predictions and points breakdown.</p>';
   body.innerHTML = html;
+  var dailyBtn = document.getElementById("lb-daily");
+  if(dailyBtn) dailyBtn.addEventListener("click", function(){ openDailyModal(preds, R); });
   body.querySelectorAll(".lb-row").forEach(function(btn){
     btn.addEventListener("click", function(){ openPersonModal(rows[+btn.getAttribute("data-i")]); });
   });
@@ -894,6 +898,87 @@ function openPersonModal(row){
   function close(){ document.body.removeChild(ov); }
   ov.addEventListener("click", function(ev){ if(ev.target===ov) close(); });
   sheet.querySelector("#pm-close").addEventListener("click", close);
+}
+
+/* --------------------- predictions by day --------------------- */
+var MON_ABBR = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+function todayStr(){ var d=new Date(); return d.getDate()+" "+MON_ABBR[d.getMonth()]; }
+function matchDates(){
+  var seen={}, list=[];
+  MATCHES.forEach(function(m){ if(!seen[m.date]){ seen[m.date]=1; list.push(m.date); } });
+  return list.sort(function(a,b){ return dkey(a)-dkey(b); });
+}
+function defaultDay(dates){
+  var t=todayStr(); if(dates.indexOf(t)>=0) return t;
+  var tk=dkey(t), up=null;
+  dates.forEach(function(d){ if(up===null && dkey(d)>=tk) up=d; });
+  return up || dates[dates.length-1];
+}
+function predOutcome(p, act, m){
+  if(!p || p.h===""||p.a===""||!act) return {cls:"none"};
+  var ah,aa;
+  if(normName(act.home)===normName(m.home)){ ah=+act.h; aa=+act.a; } else { ah=+act.a; aa=+act.h; }
+  var ph=+p.h, pa=+p.a;
+  if(ph===ah && pa===aa) return {cls:"exact", pts:SCORING.exact};
+  if(Math.sign(ph-pa)===Math.sign(ah-aa)) return {cls:"result", pts:SCORING.result};
+  return {cls:"wrong"};
+}
+function dayMatchesHtml(date, preds, R){
+  var ms = MATCHES.filter(function(m){ return m.date===date; })
+    .sort(function(a,b){ return a.group.localeCompare(b.group); });
+  if(!ms.length) return '<p class="muted">No group matches on this day.</p>';
+  var rank={exact:0,result:1,wrong:2,none:3}, html='';
+  ms.forEach(function(m){
+    var act = R._pairIndex[pairKey(m.home,m.away)];
+    var resultStr;
+    if(act){
+      var ah,aa;
+      if(normName(act.home)===normName(m.home)){ ah=+act.h; aa=+act.a; } else { ah=+act.a; aa=+act.h; }
+      resultStr = '<strong>'+ah+'–'+aa+'</strong> <span style="color:#1a7f37;font-weight:700;">FT</span>';
+    } else { resultStr = '<span class="muted">not played yet</span>'; }
+
+    var rows = preds.map(function(e){
+      var p=(e.predictions||{})[m.id];
+      var has = p && p.h!=="" && p.a!=="";
+      return { name:e.name||"?", u12:e.category==="Under 12", has:has, score:has?(p.h+'–'+p.a):'—', oc:predOutcome(p,act,m) };
+    }).sort(function(a,b){ return (rank[a.oc.cls]-rank[b.oc.cls]) || a.name.localeCompare(b.name); });
+
+    var done = rows.filter(function(r){ return r.has; }).length;
+    html += '<div class="ticket" style="padding:12px 14px;margin-bottom:10px;">' +
+      '<div class="flex ac jb" style="gap:8px;margin-bottom:6px;">' +
+        '<div style="font-weight:700;">'+(FLAGS[m.home]||"")+' '+esc(m.home)+' v '+esc(m.away)+' '+(FLAGS[m.away]||"")+'</div>' +
+        '<div class="md-pill">Group '+m.group+'</div></div>' +
+      '<div style="font-size:13px;margin-bottom:8px;">Result: '+resultStr+' <span class="muted">· '+done+'/'+rows.length+' predicted</span></div>' +
+      '<div style="display:grid;gap:4px;font-size:13px;">';
+    rows.forEach(function(r){
+      var badge='';
+      if(r.oc.cls==="exact") badge=' <span style="background:#d8f0dd;color:#1a7f37;border-radius:6px;padding:1px 6px;font-size:11px;font-weight:700;">exact +'+r.oc.pts+'</span>';
+      else if(r.oc.cls==="result") badge=' <span style="background:#fbe6c8;color:#b4690e;border-radius:6px;padding:1px 6px;font-size:11px;font-weight:700;">+'+r.oc.pts+'</span>';
+      html += '<div class="flex ac jb"'+(r.has?'':' style="opacity:.5;"')+'>' +
+        '<span>'+esc(r.name)+(r.u12?' <span class="md-pill">U12</span>':'')+'</span>' +
+        '<span style="font-weight:700;'+(r.oc.cls==="wrong"?'color:#9a8d70;':'')+'">'+esc(r.score)+badge+'</span></div>';
+    });
+    html += '</div></div>';
+  });
+  return html;
+}
+function openDailyModal(preds, R){
+  if(!preds || !preds.length) return;
+  var dates=matchDates(), sel=defaultDay(dates), today=todayStr();
+  var opts=dates.map(function(d){ return '<option value="'+esc(d)+'"'+(d===sel?' selected':'')+'>'+esc(d)+(d===today?' (today)':'')+'</option>'; }).join("");
+  var html='<div class="flex ac jb" style="margin-bottom:10px;"><div class="display" style="font-size:20px;color:var(--red);">Predictions by day</div><button class="link" id="dp-close">Close</button></div>' +
+    '<select class="field" id="dp-day" style="margin-bottom:12px;">'+opts+'</select>' +
+    '<div id="dp-body" style="overflow:auto;"></div>';
+  var ov=document.createElement("div"); ov.className="overlay";
+  var sheet=document.createElement("div"); sheet.className="sheet pop"; sheet.innerHTML=html;
+  ov.appendChild(sheet); document.body.appendChild(ov);
+  function close(){ document.body.removeChild(ov); }
+  ov.addEventListener("click", function(ev){ if(ev.target===ov) close(); });
+  sheet.querySelector("#dp-close").addEventListener("click", close);
+  var bodyEl=sheet.querySelector("#dp-body"), daySel=sheet.querySelector("#dp-day");
+  function draw(){ bodyEl.innerHTML=dayMatchesHtml(daySel.value, preds, R); }
+  daySel.addEventListener("change", draw);
+  draw();
 }
 
 /* --------------------------- organiser import --------------------------- */
