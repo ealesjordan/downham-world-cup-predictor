@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-06-13T06:04:45.096Z",
+  "updatedAt": "2026-06-13T22:35:39.714Z",
   "groupScores": [
     {
       "home": "Mexico",
@@ -23,6 +23,12 @@
       "home": "USA",
       "away": "Paraguay",
       "h": 4,
+      "a": 1
+    },
+    {
+      "home": "Qatar",
+      "away": "Switzerland",
+      "h": 1,
       "a": 1
     }
   ],
