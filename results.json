@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-06-15T12:49:45.760Z",
+  "updatedAt": "2026-06-15T23:14:33.663Z",
   "groupScores": [
     {
       "home": "Mexico",
@@ -71,6 +71,18 @@
       "home": "Sweden",
       "away": "Tunisia",
       "h": 5,
+      "a": 1
+    },
+    {
+      "home": "Spain",
+      "away": "Cabo Verde",
+      "h": 0,
+      "a": 0
+    },
+    {
+      "home": "Belgium",
+      "away": "Egypt",
+      "h": 1,
       "a": 1
     }
   ],
