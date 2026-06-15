@@ -461,6 +461,16 @@ function buildWhatsApp(entry){
   L.push("");
   L.push(total ? ("_" + total + " of " + TOTAL + " group matches predicted_") : "_No predictions filled in yet_");
 
+  if (total){
+    var br = computeBracket(preds, {});
+    L.push(""); L.push("*Teams through to the Round of 32*");
+    Object.keys(GROUPS).forEach(function(g){
+      L.push(g + ": " + br.tables[g][0].team + ", " + br.tables[g][1].team);
+    });
+    var thirds = br.qualThirds.map(function(s){ return s.team; });
+    if (thirds.length) L.push("Best 3rd-placed: " + thirds.join(", "));
+  }
+
   if (koPicked(winners) > 0){
     L.push(""); L.push("*— Knockout predictions —*");
     KO_ROUNDS.forEach(function(r){
