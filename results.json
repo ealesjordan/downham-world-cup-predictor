@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-06-14T22:38:13.355Z",
+  "updatedAt": "2026-06-15T12:49:45.760Z",
   "groupScores": [
     {
       "home": "Mexico",
@@ -60,6 +60,18 @@
       "away": "Japan",
       "h": 2,
       "a": 2
+    },
+    {
+      "home": "Ivory Coast",
+      "away": "Ecuador",
+      "h": 1,
+      "a": 0
+    },
+    {
+      "home": "Sweden",
+      "away": "Tunisia",
+      "h": 5,
+      "a": 1
     }
   ],
   "qualifiedR32": [],
