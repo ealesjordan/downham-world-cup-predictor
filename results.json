@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-06-23T05:56:58.891Z",
+  "updatedAt": "2026-06-23T22:43:56.717Z",
   "groupScores": [
     {
       "home": "Mexico",
@@ -264,6 +264,18 @@
       "away": "Algeria",
       "h": 1,
       "a": 2
+    },
+    {
+      "home": "Portugal",
+      "away": "Uzbekistan",
+      "h": 5,
+      "a": 0
+    },
+    {
+      "home": "England",
+      "away": "Ghana",
+      "h": 0,
+      "a": 0
     }
   ],
   "qualifiedR32": [],
