@@ -2,11 +2,18 @@ name: Update World Cup results
 
 on:
   schedule:
-    # Twice daily (UTC): 06:30 and 21:30. Results come from ESPN's free public
-    # API, so there's no key or quota to worry about. Add/adjust cron lines to
-    # refresh more often during the tournament.
-    - cron: "30 6 * * *"
-    - cron: "30 21 * * *"
+    # Times are UTC. GitHub runs scheduled workflows on a BEST-EFFORT basis and
+    # delays them heavily at congested times — the top of the hour, ":30", and
+    # the ~06:00 UTC window are the most oversubscribed slots, which is why a
+    # plain "30 6 * * *" was consistently landing 3-6 hours late. To get a run
+    # near the morning target we (a) use off-peak minutes (:17) and (b) fire a
+    # couple of staggered morning attempts. Extra runs are harmless: the commit
+    # step only commits when results.json changes and the concurrency group
+    # below prevents overlap. ESPN's free public API has no key or quota.
+    - cron: "17 5 * * *"    # early morning attempt
+    - cron: "17 6 * * *"    # morning target (~06:17 UTC)
+    - cron: "17 8 * * *"    # backup if the earlier two are delayed/dropped
+    - cron: "17 21 * * *"   # evening
   workflow_dispatch: {}   # lets you run it manually from the Actions tab
 
 permissions:
