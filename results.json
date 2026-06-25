@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-06-24T22:46:55.677Z",
+  "updatedAt": "2026-06-25T08:21:50.965Z",
   "groupScores": [
     {
       "home": "Mexico",
@@ -300,6 +300,30 @@
       "away": "Canada",
       "h": 2,
       "a": 1
+    },
+    {
+      "home": "Morocco",
+      "away": "Haiti",
+      "h": 4,
+      "a": 2
+    },
+    {
+      "home": "Scotland",
+      "away": "Brazil",
+      "h": 0,
+      "a": 3
+    },
+    {
+      "home": "Czechia",
+      "away": "Mexico",
+      "h": 0,
+      "a": 3
+    },
+    {
+      "home": "South Africa",
+      "away": "South Korea",
+      "h": 1,
+      "a": 0
     }
   ],
   "qualifiedR32": [],
