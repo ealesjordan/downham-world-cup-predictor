@@ -59,13 +59,21 @@ var SCORING = {
   exact: 5, result: 2,          // group score: exact / right result
   qualifier: 10,                // each correct Round-of-32 team
   winner: 25, topScorer: 25,    // pre-tournament picks
-  koPerCorrect: 2               // each correct knockout-round winner (same as a correct group result)
+  koExact: 5, koResult: 2,      // knockout 90-min score: exact / right result
+  koPerCorrect: 2               // each correct team going through (stacks with the score points)
 };
 ```
 
-Knockout picks are winner selections (who advances), so they score like a correct group
-result — **2 points** per correct pick, every round. Change any of these values to whatever
-you agree.
+**Knockouts** are predicted as the **score after 90 minutes**. Because knockout ties can't end
+level, if a prediction is a draw the entrant also picks who goes through (extra time /
+penalties). Each tie scores like a group game on the 90-minute score — **5** exact / **2**
+right result — **plus 2** more for naming the team that actually advances (the two stack).
+Change any of these values to whatever you agree.
+
+> Knockout 90-minute scores come from ESPN's per-period data (`linescores`), summing the
+> first two periods so extra time is excluded; if that detail is missing it falls back to the
+> final score. The R32 qualifiers (and who's in each tie) are taken from the real results, or
+> derived from the final group standings once every group game is in.
 
 ## Things to check once it's live
 

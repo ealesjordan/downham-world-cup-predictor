@@ -124,9 +124,21 @@ async function fetchEvents() {
   return Array.from(byId.values());
 }
 
+// Score after 90 minutes (regulation only). ESPN exposes per-period goals in
+// `linescores`; summing the first two periods gives the 90' score and excludes
+// extra time. Falls back to the final `score` when period data isn't present.
+function regulationScore(c) {
+  const ls = c && c.linescores;
+  if (Array.isArray(ls) && ls.length >= 2 && ls[0] && ls[1] && ls[0].value != null && ls[1].value != null) {
+    return Number(ls[0].value) + Number(ls[1].value);
+  }
+  return Number(c && c.score);
+}
+
 function run() {
   return fetchEvents().then(events => {
     const groupScores = [];
+    const koScores = [];
     const advancers = { R32: [], R16: [], QF: [], SF: [], F: [] };
     const r32Teams = new Set();
     let champion = null;
@@ -152,6 +164,7 @@ function run() {
       }
       if (bucket === "R32") { r32Teams.add(home); r32Teams.add(away); }
       if (["R32","R16","QF","SF","F"].includes(bucket) && finished) {
+        koScores.push({ home, away, h: regulationScore(homeC), a: regulationScore(awayC), round: bucket });
         const winner = homeC.winner ? home : (awayC.winner ? away : null);
         if (winner) {
           if (!advancers[bucket].includes(winner)) advancers[bucket].push(winner);
@@ -163,6 +176,7 @@ function run() {
     const out = {
       updatedAt: new Date().toISOString(),
       groupScores,
+      koScores,
       qualifiedR32: r32Teams.size === 32 ? Array.from(r32Teams).sort() : [],
       advancers,
       champion,
