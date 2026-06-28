@@ -74,13 +74,16 @@ function roundBucketFromText(text) {
 }
 function roundBucketFromDate(iso) {
   const d = iso.slice(0, 10); // YYYY-MM-DD (event date is UTC ISO)
+  // Boundaries are padded a day past each round's last US matchday: late US-night
+  // kickoffs roll into the next UTC day (e.g. a 9:30pm CT July-3 R32 game is
+  // ~02:30 UTC July 4). Rest days between rounds keep the windows from colliding.
   if (d <= "2026-06-27") return "GROUP";
-  if (d <= "2026-07-03") return "R32";
-  if (d <= "2026-07-07") return "R16";
-  if (d <= "2026-07-11") return "QF";
-  if (d <= "2026-07-15") return "SF";
-  if (d === "2026-07-18") return "3P";
-  return "F";
+  if (d <= "2026-07-04") return "R32";  // R32: Jun 28 – Jul 3 US
+  if (d <= "2026-07-08") return "R16";  // R16: Jul 5 – Jul 7 US
+  if (d <= "2026-07-12") return "QF";   // QF:  Jul 9 – Jul 11 US
+  if (d <= "2026-07-16") return "SF";   // SF:  Jul 14 – Jul 15 US
+  if (d <= "2026-07-19") return "3P";   // 3rd place: Jul 18 US
+  return "F";                           // Final: Jul 19 US (Final/3rd also split by text)
 }
 function bucketFor(ev, comp) {
   const text = [
