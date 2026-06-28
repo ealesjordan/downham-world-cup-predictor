@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-06-28T09:35:19.461Z",
+  "updatedAt": "2026-06-28T09:40:31.537Z",
   "groupScores": [
     {
       "home": "Mexico",
@@ -496,14 +496,13 @@
       {
         "home": "Argentina",
         "away": "Cabo Verde"
-      }
-    ],
-    "R16": [
+      },
       {
         "home": "Colombia",
         "away": "Ghana"
       }
     ],
+    "R16": [],
     "QF": [],
     "SF": [],
     "F": []
