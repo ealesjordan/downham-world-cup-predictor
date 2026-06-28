@@ -53,7 +53,9 @@ function team(name) {
   const n = norm(name);
   if (BY_NORM[n]) return BY_NORM[n];
   if (ALIASES[n]) return ALIASES[n];
-  unmapped.add(name);
+  // Ignore ESPN's bracket placeholders for not-yet-drawn rounds
+  // (e.g. "Round of 32 1 Winner", "Semifinal 2 Loser") — not real teams.
+  if (!/winner|loser|^roundof|quarterfinal|semifinal|thirdplace|tbd|tobedetermined/.test(n)) unmapped.add(name);
   return name; // fall through (won't match predictions — surfaces in logs)
 }
 
@@ -148,7 +150,6 @@ function run() {
     const koScores = [];
     const koFixtures = { R32: [], R16: [], QF: [], SF: [], F: [] };
     const advancers = { R32: [], R16: [], QF: [], SF: [], F: [] };
-    const r32Teams = new Set();
     let champion = null;
 
     events.forEach(ev => {
@@ -176,7 +177,6 @@ function run() {
       if (["R32","R16","QF","SF","F"].includes(bucket) && BY_NORM[norm(home)] && BY_NORM[norm(away)]) {
         koFixtures[bucket].push({ home, away });
       }
-      if (bucket === "R32") { r32Teams.add(home); r32Teams.add(away); }
       if (["R32","R16","QF","SF","F"].includes(bucket) && finished) {
         koScores.push({ home, away, h: regulationScore(homeC), a: regulationScore(awayC), round: bucket });
         const winner = homeC.winner ? home : (awayC.winner ? away : null);
@@ -192,7 +192,8 @@ function run() {
       groupScores,
       koScores,
       koFixtures,
-      qualifiedR32: r32Teams.size === 32 ? Array.from(r32Teams).sort() : [],
+      // The 32 qualifiers are exactly the (real) teams in the R32 fixtures.
+      qualifiedR32: (function(){ var s=new Set(); koFixtures.R32.forEach(function(f){ s.add(f.home); s.add(f.away); }); return s.size===32 ? Array.from(s).sort() : []; })(),
       advancers,
       champion,
       // ESPN's scoreboard doesn't carry tournament top-scorer stats; left empty for now.
