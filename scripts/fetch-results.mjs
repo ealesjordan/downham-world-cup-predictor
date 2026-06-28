@@ -95,7 +95,11 @@ function bucketFor(ev, comp) {
 function eachUTCDate(start, end, cb) {
   const day = 86400000;
   let t = Date.parse(start + "T00:00:00Z");
-  const last = Math.min(Date.parse(end + "T00:00:00Z"), Date.now());
+  // Scan the whole tournament window (not just up to today) so SCHEDULED
+  // knockout fixtures are captured as soon as the draw is known — that's what
+  // drives the correct knockout ties in the app. Future dates with no games
+  // simply return nothing.
+  const last = Date.parse(end + "T00:00:00Z");
   for (; t <= last; t += day) {
     const dt = new Date(t);
     const ymd = dt.getUTCFullYear() +
@@ -139,6 +143,7 @@ function run() {
   return fetchEvents().then(events => {
     const groupScores = [];
     const koScores = [];
+    const koFixtures = { R32: [], R16: [], QF: [], SF: [], F: [] };
     const advancers = { R32: [], R16: [], QF: [], SF: [], F: [] };
     const r32Teams = new Set();
     let champion = null;
@@ -162,6 +167,12 @@ function run() {
         }
         return;
       }
+      // Record the actual knockout matchup (scheduled or finished) when both
+      // teams are real (skip "Winner Match N" placeholders for undrawn rounds).
+      // This is what the app uses to show the correct ties.
+      if (["R32","R16","QF","SF","F"].includes(bucket) && BY_NORM[norm(home)] && BY_NORM[norm(away)]) {
+        koFixtures[bucket].push({ home, away });
+      }
       if (bucket === "R32") { r32Teams.add(home); r32Teams.add(away); }
       if (["R32","R16","QF","SF","F"].includes(bucket) && finished) {
         koScores.push({ home, away, h: regulationScore(homeC), a: regulationScore(awayC), round: bucket });
@@ -177,6 +188,7 @@ function run() {
       updatedAt: new Date().toISOString(),
       groupScores,
       koScores,
+      koFixtures,
       qualifiedR32: r32Teams.size === 32 ? Array.from(r32Teams).sort() : [],
       advancers,
       champion,

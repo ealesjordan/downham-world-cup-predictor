@@ -316,7 +316,7 @@ function actualBracket(R){
   var gp = actualGroupPreds(R);
   var winners = {};
   ['R32','R16','QF','SF','F'].forEach(function(key){
-    var br = computeBracket(gp, winners);
+    var br = computeBracket(gp, winners); applyRealR32(br.teams, R);
     var round = null; KO_ROUNDS.forEach(function(r){ if(r.key===key) round=r; });
     var adv = (R && R.advancers && R.advancers[key]) || [];
     if(!adv.length) return;
@@ -327,7 +327,7 @@ function actualBracket(R){
       else if (t[1] && advSet[normName(t[1])]) winners[no] = t[1];
     });
   });
-  return computeBracket(gp, winners);
+  var fin = computeBracket(gp, winners); applyRealR32(fin.teams, R); return fin;
 }
 
 /* --------------------------- leaderboard --------------------------- */
@@ -350,13 +350,39 @@ function indexResults(R){
   var kidx = {};
   (R.koScores||[]).forEach(function(g){ kidx[pairKey(g.home,g.away)] = g; });
   R._koPairIndex = kidx;
-  // Fallback: once every group game is in, derive the 32 qualifiers from the
-  // actual standings so qualifier points score and the R32 unlocks even before
-  // ESPN publishes the knockout fixtures. Real qualifiedR32 data still wins.
-  if ((!R.qualifiedR32 || R.qualifiedR32.length !== 32) && (R.groupScores||[]).length >= TOTAL){
-    R.qualifiedR32 = derivedQualifiedR32(R);
+  // Real R32 matchup → opponent lookup, used to correct the knockout ties (the
+  // app's third-placed template can't reproduce FIFA's official assignment).
+  var koOpp = {};
+  ((R.koFixtures && R.koFixtures.R32) || []).forEach(function(f){
+    koOpp[normName(f.home)] = f.away; koOpp[normName(f.away)] = f.home;
+  });
+  R._koOppR32 = koOpp;
+  // Qualifiers (the 32 R32 teams): prefer the real R32 fixtures, else ESPN's
+  // qualifiedR32, else derive from the final standings once the groups are done.
+  if (!R.qualifiedR32 || R.qualifiedR32.length !== 32){
+    var realSet = {}; ((R.koFixtures && R.koFixtures.R32) || []).forEach(function(f){ realSet[f.home]=1; realSet[f.away]=1; });
+    var realTeams = Object.keys(realSet);
+    if (realTeams.length === 32) R.qualifiedR32 = realTeams.sort();
+    else if ((R.groupScores||[]).length >= TOTAL) R.qualifiedR32 = derivedQualifiedR32(R);
   }
   return R;
+}
+// Correct each R32 tie's third-placed team using the real fixtures: every "3"
+// slot is anchored by a group winner/runner-up the app already gets right, so we
+// swap in that anchor's real opponent.
+function applyRealR32(teams, R){
+  var opp = (R && R._koOppR32) || {};
+  if (!Object.keys(opp).length) return teams;
+  R32DEF.forEach(function(d){
+    var t = teams[d.m]; if(!t) return;
+    var aThird = d.a.t==="3", bThird = d.b.t==="3";
+    if(!aThird && !bThird) return;
+    var anchor = aThird ? t[1] : t[0];
+    var realOpp = anchor ? opp[normName(anchor)] : null;
+    if(!realOpp) return;
+    if(aThird) teams[d.m] = [realOpp, t[1]]; else teams[d.m] = [t[0], realOpp];
+  });
+  return teams;
 }
 function derivedQualifiedR32(R){
   var gp = actualGroupPreds(R);
