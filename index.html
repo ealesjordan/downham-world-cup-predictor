@@ -343,7 +343,22 @@ function pairKey(a,b){ return [normName(a),normName(b)].sort().join("|"); }
 function indexResults(R){
   var idx = {};
   (R.groupScores||[]).forEach(function(g){ idx[pairKey(g.home,g.away)] = g; });
-  R._pairIndex = idx; return R;
+  R._pairIndex = idx;
+  // Fallback: once every group game is in, derive the 32 qualifiers from the
+  // actual standings so qualifier points score and the R32 unlocks even before
+  // ESPN publishes the knockout fixtures. Real qualifiedR32 data still wins.
+  if ((!R.qualifiedR32 || R.qualifiedR32.length !== 32) && (R.groupScores||[]).length >= TOTAL){
+    R.qualifiedR32 = derivedQualifiedR32(R);
+  }
+  return R;
+}
+function derivedQualifiedR32(R){
+  var gp = actualGroupPreds(R);
+  var br = computeBracket(gp, {});
+  var q = [];
+  Object.keys(GROUPS).forEach(function(g){ q.push(br.tables[g][0].team, br.tables[g][1].team); });
+  br.qualThirds.forEach(function(s){ q.push(s.team); });
+  return q;
 }
 function scoreEntry(entry, R){
   var preds = entry.predictions||{}, w = entry.knockout||{};
