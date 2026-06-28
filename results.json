@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-06-28T09:45:47.839Z",
+  "updatedAt": "2026-06-28T22:14:25.286Z",
   "groupScores": [
     {
       "home": "Mexico",
@@ -434,7 +434,15 @@
       "a": 3
     }
   ],
-  "koScores": [],
+  "koScores": [
+    {
+      "home": "South Africa",
+      "away": "Canada",
+      "h": 0,
+      "a": 1,
+      "round": "R32"
+    }
+  ],
   "koFixtures": {
     "R32": [
       {
@@ -542,7 +550,9 @@
     "USA"
   ],
   "advancers": {
-    "R32": [],
+    "R32": [
+      "Canada"
+    ],
     "R16": [],
     "QF": [],
     "SF": [],
