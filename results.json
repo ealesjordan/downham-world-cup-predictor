@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-06-28T09:40:31.537Z",
+  "updatedAt": "2026-06-28T09:45:47.839Z",
   "groupScores": [
     {
       "home": "Mexico",
@@ -507,7 +507,40 @@
     "SF": [],
     "F": []
   },
-  "qualifiedR32": [],
+  "qualifiedR32": [
+    "Algeria",
+    "Argentina",
+    "Australia",
+    "Austria",
+    "Belgium",
+    "Bosnia & Herzegovina",
+    "Brazil",
+    "Cabo Verde",
+    "Canada",
+    "Colombia",
+    "Croatia",
+    "DR Congo",
+    "Ecuador",
+    "Egypt",
+    "England",
+    "France",
+    "Germany",
+    "Ghana",
+    "Ivory Coast",
+    "Japan",
+    "Mexico",
+    "Morocco",
+    "Netherlands",
+    "Norway",
+    "Paraguay",
+    "Portugal",
+    "Senegal",
+    "South Africa",
+    "Spain",
+    "Sweden",
+    "Switzerland",
+    "USA"
+  ],
   "advancers": {
     "R32": [],
     "R16": [],
