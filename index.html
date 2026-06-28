@@ -503,11 +503,55 @@ function doneCount(){
 }
 
 /* --------------------------- WhatsApp --------------------------- */
-function buildWhatsApp(entry){
-  var name=entry.name, category=entry.category, preds=entry.predictions||{}, winners=entry.knockout||{};
+// Their predicted qualifiers (top 2 per group + best 8 third-placed), from group scores.
+function waQualifierLines(preds){
+  var L = [], total = 0;
+  for (var id in preds){ var p=preds[id]; if (p && p.h!=="" && p.a!=="") total++; }
+  if (!total) return L;
+  var br = computeBracket(preds, {});
+  L.push("*Teams through to the Round of 32*");
+  Object.keys(GROUPS).forEach(function(g){ L.push(g + ": " + br.tables[g][0].team + ", " + br.tables[g][1].team); });
+  var thirds = br.qualThirds.map(function(s){ return s.team; });
+  if (thirds.length) L.push("Best 3rd-placed: " + thirds.join(", "));
+  return L;
+}
+// One knockout round's predicted scorelines (+ who goes through on a draw).
+function waKoRoundLines(round, koScores, winners){
+  var lines = [];
+  round.matches.forEach(function(no){
+    var s = koScores[no], adv = winners[no];
+    if (s && s.h!=="" && s.a!==""){
+      var line = s.home + " " + s.h + " - " + s.a + " " + s.away;
+      if (+s.h === +s.a && adv) line += " → " + adv + " go through";
+      lines.push(line);
+    } else if (adv){
+      lines.push(adv + " to go through");
+    }
+  });
+  return lines;
+}
+// scope: "all" (full list) or a knockout key (R32/R16/QF/SF/F) for a phase-only export.
+function buildWhatsApp(entry, scope){
+  var koKeys = { R32:1, R16:1, QF:1, SF:1, F:1 };
+  scope = koKeys[scope] ? scope : "all";
+  var name=entry.name, category=entry.category, preds=entry.predictions||{}, winners=entry.knockout||{}, koScores=entry.koScores||{};
   var L = [];
   L.push("⚽ *World Cup 2026 — Downham Town FC*");
   L.push("Entry: *" + name + "*" + (category==="Under 12" ? "  _(Under-12s)_" : ""));
+
+  if (scope !== "all"){
+    var round = null; KO_ROUNDS.forEach(function(r){ if(r.key===scope) round=r; });
+    if (scope === "R32"){
+      var q = waQualifierLines(preds);
+      if (q.length){ L.push(""); q.forEach(function(x){ L.push(x); }); }
+    }
+    L.push(""); L.push("*" + round.label + " predictions — score after 90 mins*");
+    var lines = waKoRoundLines(round, koScores, winners);
+    if (lines.length) lines.forEach(function(x){ L.push(x); }); else L.push("_None predicted yet_");
+    if (scope === "F" && winners[103]){ L.push(""); L.push("🏆 *Champion: " + winners[103] + "*"); }
+    return L.join("\n");
+  }
+
   L.push("");
   L.push("🏆 *Winner:* " + (entry.winner || "_(not chosen yet)_"));
   L.push("👟 *Top scorer:* " + (entry.topScorer || "_(not chosen yet)_"));
@@ -523,32 +567,14 @@ function buildWhatsApp(entry){
   L.push("");
   L.push(total ? ("_" + total + " of " + TOTAL + " group matches predicted_") : "_No predictions filled in yet_");
 
-  if (total){
-    var br = computeBracket(preds, {});
-    L.push(""); L.push("*Teams through to the Round of 32*");
-    Object.keys(GROUPS).forEach(function(g){
-      L.push(g + ": " + br.tables[g][0].team + ", " + br.tables[g][1].team);
-    });
-    var thirds = br.qualThirds.map(function(s){ return s.team; });
-    if (thirds.length) L.push("Best 3rd-placed: " + thirds.join(", "));
-  }
+  var ql = waQualifierLines(preds);
+  if (ql.length){ L.push(""); ql.forEach(function(x){ L.push(x); }); }
 
-  var koScores = entry.koScores || {};
   var anyKoScore = Object.keys(koScores).some(function(no){ var s=koScores[no]; return s && s.h!=="" && s.a!==""; });
   if (anyKoScore || koPicked(winners) > 0){
     L.push(""); L.push("*— Knockout predictions (score after 90 mins) —*");
     KO_ROUNDS.forEach(function(r){
-      var lines = [];
-      r.matches.forEach(function(no){
-        var s = koScores[no], adv = winners[no];
-        if (s && s.h!=="" && s.a!==""){
-          var line = s.home + " " + s.h + " - " + s.a + " " + s.away;
-          if (+s.h === +s.a && adv) line += " → " + adv + " go through";
-          lines.push(line);
-        } else if (adv){
-          lines.push(adv + " to go through");
-        }
-      });
+      var lines = waKoRoundLines(r, koScores, winners);
       if (lines.length){ L.push(""); L.push("*" + r.label + "*"); lines.forEach(function(x){ L.push(x); }); }
     });
     if (winners[103]){ L.push(""); L.push("🏆 *Champion: " + winners[103] + "*"); }
@@ -680,7 +706,7 @@ function showWelcome(){
     state.predictions = base.predictions || {};
     state.knockout = base.knockout || {};
     state.koScores = base.koScores || {};
-    state.tab = "group"; state.fGroup="all"; state.fMd="all"; state.saved="";
+    state.tab = "groups"; state.fGroup="all"; state.fMd="all"; state.saved="";
     showPredict();
     if (fileE){ var s=document.getElementById("saved"); if(s) s.textContent="Loaded your predictions ✓"; }
   }
@@ -765,7 +791,9 @@ function showPredict(){
   document.getElementById("p-editpicks").addEventListener("click", function(){ persistNow(); showWelcome(); });
   document.getElementById("p-save").addEventListener("click", function(){ persistNow(); });
   document.getElementById("p-share").addEventListener("click", function(){
-    persistNow(); openShare(buildWhatsApp(state));
+    persistNow();
+    var koKeys = { R32:1, R16:1, QF:1, SF:1, F:1 };
+    openShare(buildWhatsApp(state, koKeys[state.tab] ? state.tab : "all"));
   });
   ['groups','R32','R16','QF','SF','F'].forEach(function(k){
     document.getElementById('tab-'+k).addEventListener("click", function(){
@@ -788,6 +816,11 @@ function renderTab(){
   });
   if (state.tab==='groups') renderGroupTab();
   else renderRoundTab(state.tab);
+  var shareBtn = document.getElementById("p-share");
+  if (shareBtn){
+    var KO_LABEL = { R32:"R32", R16:"R16", QF:"QF", SF:"SF", F:"Final" };
+    shareBtn.textContent = KO_LABEL[state.tab] ? ("📤 Send " + KO_LABEL[state.tab] + " to WhatsApp") : "📤 Send via WhatsApp";
+  }
   updateProgress();
 }
 
