@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-06-28T09:32:53.728Z",
+  "updatedAt": "2026-06-28T09:35:19.461Z",
   "groupScores": [
     {
       "home": "Mexico",
@@ -435,6 +435,79 @@
     }
   ],
   "koScores": [],
+  "koFixtures": {
+    "R32": [
+      {
+        "home": "South Africa",
+        "away": "Canada"
+      },
+      {
+        "home": "Brazil",
+        "away": "Japan"
+      },
+      {
+        "home": "Germany",
+        "away": "Paraguay"
+      },
+      {
+        "home": "Netherlands",
+        "away": "Morocco"
+      },
+      {
+        "home": "Ivory Coast",
+        "away": "Norway"
+      },
+      {
+        "home": "France",
+        "away": "Sweden"
+      },
+      {
+        "home": "Mexico",
+        "away": "Ecuador"
+      },
+      {
+        "home": "England",
+        "away": "DR Congo"
+      },
+      {
+        "home": "Belgium",
+        "away": "Senegal"
+      },
+      {
+        "home": "USA",
+        "away": "Bosnia & Herzegovina"
+      },
+      {
+        "home": "Spain",
+        "away": "Austria"
+      },
+      {
+        "home": "Portugal",
+        "away": "Croatia"
+      },
+      {
+        "home": "Switzerland",
+        "away": "Algeria"
+      },
+      {
+        "home": "Australia",
+        "away": "Egypt"
+      },
+      {
+        "home": "Argentina",
+        "away": "Cabo Verde"
+      }
+    ],
+    "R16": [
+      {
+        "home": "Colombia",
+        "away": "Ghana"
+      }
+    ],
+    "QF": [],
+    "SF": [],
+    "F": []
+  },
   "qualifiedR32": [],
   "advancers": {
     "R32": [],
