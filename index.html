@@ -541,10 +541,6 @@ function buildWhatsApp(entry, scope){
 
   if (scope !== "all"){
     var round = null; KO_ROUNDS.forEach(function(r){ if(r.key===scope) round=r; });
-    if (scope === "R32"){
-      var q = waQualifierLines(preds);
-      if (q.length){ L.push(""); q.forEach(function(x){ L.push(x); }); }
-    }
     L.push(""); L.push("*" + round.label + " predictions — score after 90 mins*");
     var lines = waKoRoundLines(round, koScores, winners);
     if (lines.length) lines.forEach(function(x){ L.push(x); }); else L.push("_None predicted yet_");
