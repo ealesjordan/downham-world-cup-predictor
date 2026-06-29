@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-06-29T07:03:17.357Z",
+  "updatedAt": "2026-06-29T22:20:11.481Z",
   "groupScores": [
     {
       "home": "Mexico",
@@ -441,6 +441,13 @@
       "h": 0,
       "a": 1,
       "round": "R32"
+    },
+    {
+      "home": "Brazil",
+      "away": "Japan",
+      "h": 2,
+      "a": 1,
+      "round": "R32"
     }
   ],
   "koFixtures": {
@@ -567,7 +574,8 @@
   ],
   "advancers": {
     "R32": [
-      "Canada"
+      "Canada",
+      "Brazil"
     ],
     "R16": [],
     "QF": [],
