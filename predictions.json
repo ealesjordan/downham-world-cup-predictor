@@ -1242,7 +1242,7 @@
     "name": "Claude AI",
     "category": "Adult",
     "winner": "Spain",
-    "topScorer": "Kylian Mbappé",
+    "topScorer": "Kylian Mbapp\u00e9",
     "predictions": {
       "A-1-0": {
         "h": "2",
@@ -1533,7 +1533,123 @@
         "a": "1"
       }
     },
-    "knockout": {}
+    "knockout": {
+      "73": "Canada",
+      "74": "Brazil",
+      "75": "Germany",
+      "76": "Netherlands",
+      "77": "Norway",
+      "78": "France",
+      "79": "Mexico",
+      "80": "England",
+      "81": "Belgium",
+      "82": "USA",
+      "83": "Spain",
+      "84": "Portugal",
+      "85": "Switzerland",
+      "86": "Egypt",
+      "87": "Argentina",
+      "88": "Colombia"
+    },
+    "koScores": {
+      "73": {
+        "home": "South Africa",
+        "away": "Canada",
+        "h": "0",
+        "a": "1"
+      },
+      "74": {
+        "home": "Brazil",
+        "away": "Japan",
+        "h": "2",
+        "a": "0"
+      },
+      "75": {
+        "home": "Germany",
+        "away": "Paraguay",
+        "h": "3",
+        "a": "1"
+      },
+      "76": {
+        "home": "Netherlands",
+        "away": "Morocco",
+        "h": "2",
+        "a": "1"
+      },
+      "77": {
+        "home": "Ivory Coast",
+        "away": "Norway",
+        "h": "1",
+        "a": "2"
+      },
+      "78": {
+        "home": "France",
+        "away": "Sweden",
+        "h": "2",
+        "a": "0"
+      },
+      "79": {
+        "home": "Mexico",
+        "away": "Ecuador",
+        "h": "2",
+        "a": "1"
+      },
+      "80": {
+        "home": "England",
+        "away": "DR Congo",
+        "h": "3",
+        "a": "0"
+      },
+      "81": {
+        "home": "Belgium",
+        "away": "Senegal",
+        "h": "2",
+        "a": "1"
+      },
+      "82": {
+        "home": "USA",
+        "away": "Bosnia & Herzegovina",
+        "h": "2",
+        "a": "1"
+      },
+      "83": {
+        "home": "Spain",
+        "away": "Austria",
+        "h": "2",
+        "a": "0"
+      },
+      "84": {
+        "home": "Portugal",
+        "away": "Croatia",
+        "h": "1",
+        "a": "0"
+      },
+      "85": {
+        "home": "Switzerland",
+        "away": "Algeria",
+        "h": "1",
+        "a": "0"
+      },
+      "86": {
+        "home": "Australia",
+        "away": "Egypt",
+        "h": "0",
+        "a": "1"
+      },
+      "87": {
+        "home": "Argentina",
+        "away": "Cabo Verde",
+        "h": "4",
+        "a": "0"
+      },
+      "88": {
+        "home": "Colombia",
+        "away": "Ghana",
+        "h": "2",
+        "a": "0"
+      }
+    },
+    "updatedAt": "2026-06-29T00:00:00.000Z"
   },
   {
     "name": "Sam Eales",
@@ -1952,7 +2068,7 @@
     "name": "Oliver Boardman",
     "category": "Adult",
     "winner": "France",
-    "topScorer": "Kylian Mbappé",
+    "topScorer": "Kylian Mbapp\u00e9",
     "predictions": {
       "A-1-0": {
         "h": "2",
