@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-06-28T22:14:25.286Z",
+  "updatedAt": "2026-06-29T07:03:17.357Z",
   "groupScores": [
     {
       "home": "Mexico",
@@ -447,67 +447,83 @@
     "R32": [
       {
         "home": "South Africa",
-        "away": "Canada"
+        "away": "Canada",
+        "date": "28 Jun"
       },
       {
         "home": "Brazil",
-        "away": "Japan"
+        "away": "Japan",
+        "date": "29 Jun"
       },
       {
         "home": "Germany",
-        "away": "Paraguay"
+        "away": "Paraguay",
+        "date": "29 Jun"
       },
       {
         "home": "Netherlands",
-        "away": "Morocco"
+        "away": "Morocco",
+        "date": "30 Jun"
       },
       {
         "home": "Ivory Coast",
-        "away": "Norway"
+        "away": "Norway",
+        "date": "30 Jun"
       },
       {
         "home": "France",
-        "away": "Sweden"
+        "away": "Sweden",
+        "date": "30 Jun"
       },
       {
         "home": "Mexico",
-        "away": "Ecuador"
+        "away": "Ecuador",
+        "date": "1 Jul"
       },
       {
         "home": "England",
-        "away": "DR Congo"
+        "away": "DR Congo",
+        "date": "1 Jul"
       },
       {
         "home": "Belgium",
-        "away": "Senegal"
+        "away": "Senegal",
+        "date": "1 Jul"
       },
       {
         "home": "USA",
-        "away": "Bosnia & Herzegovina"
+        "away": "Bosnia & Herzegovina",
+        "date": "2 Jul"
       },
       {
         "home": "Spain",
-        "away": "Austria"
+        "away": "Austria",
+        "date": "2 Jul"
       },
       {
         "home": "Portugal",
-        "away": "Croatia"
+        "away": "Croatia",
+        "date": "2 Jul"
       },
       {
         "home": "Switzerland",
-        "away": "Algeria"
+        "away": "Algeria",
+        "date": "3 Jul"
       },
       {
         "home": "Australia",
-        "away": "Egypt"
+        "away": "Egypt",
+        "date": "3 Jul"
       },
       {
         "home": "Argentina",
-        "away": "Cabo Verde"
+        "away": "Cabo Verde",
+        "date": "3 Jul"
       },
       {
         "home": "Colombia",
-        "away": "Ghana"
+        "away": "Ghana",
+        "date": "4 Jul"
       }
     ],
     "R16": [],
