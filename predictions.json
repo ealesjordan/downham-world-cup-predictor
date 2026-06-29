@@ -1534,7 +1534,6 @@
       }
     },
     "knockout": {
-      "73": "Canada",
       "74": "Brazil",
       "75": "Germany",
       "76": "Netherlands",
@@ -1552,12 +1551,6 @@
       "88": "Colombia"
     },
     "koScores": {
-      "73": {
-        "home": "South Africa",
-        "away": "Canada",
-        "h": "0",
-        "a": "1"
-      },
       "74": {
         "home": "Brazil",
         "away": "Japan",
