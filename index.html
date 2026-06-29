@@ -1082,9 +1082,13 @@ function openPersonModal(row){
 /* --------------------- predictions by day --------------------- */
 var MON_ABBR = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 function todayStr(){ var d=new Date(); return d.getDate()+" "+MON_ABBR[d.getMonth()]; }
-function matchDates(){
+function matchDates(R){
   var seen={}, list=[];
   MATCHES.forEach(function(m){ if(!seen[m.date]){ seen[m.date]=1; list.push(m.date); } });
+  var kf = (R && R.koFixtures) || {};
+  ["R32","R16","QF","SF","F"].forEach(function(k){
+    (kf[k]||[]).forEach(function(f){ if(f.date && !seen[f.date]){ seen[f.date]=1; list.push(f.date); } });
+  });
   return list.sort(function(a,b){ return dkey(a)-dkey(b); });
 }
 function defaultDay(dates){
@@ -1102,11 +1106,11 @@ function predOutcome(p, act, m){
   if(Math.sign(ph-pa)===Math.sign(ah-aa)) return {cls:"result", pts:SCORING.result};
   return {cls:"wrong"};
 }
+var DP_RANK={exact:0,result:1,wrong:2,none:3};
 function dayMatchesHtml(date, preds, R){
   var ms = MATCHES.filter(function(m){ return m.date===date; })
     .sort(function(a,b){ return a.group.localeCompare(b.group); });
-  if(!ms.length) return '<p class="muted">No group matches on this day.</p>';
-  var rank={exact:0,result:1,wrong:2,none:3}, html='';
+  var rank=DP_RANK, html='';
   ms.forEach(function(m){
     var act = R._pairIndex[pairKey(m.home,m.away)];
     var resultStr;
@@ -1139,11 +1143,81 @@ function dayMatchesHtml(date, preds, R){
     });
     html += '</div></div>';
   });
+  html += koDayHtml(date, preds, R);
+  return html || '<p class="muted">No matches on this day.</p>';
+}
+// Knockout ties on a given day: everyone's 90-min score + who they have going through.
+function koDayHtml(date, preds, R){
+  var kf=(R&&R.koFixtures)||{}; var any=false;
+  for(var k in kf){ if((kf[k]||[]).some(function(f){return f.date===date;})) any=true; }
+  if(!any) return '';
+  var abr=actualBracket(R);
+  var roundOf={}; KO_ROUNDS.forEach(function(r){ r.matches.forEach(function(no){ roundOf[no]=r; }); });
+  var pkToNo={};
+  for(var no in roundOf){ var t=abr.teams[no]; if(t&&t[0]&&t[1]) pkToNo[pairKey(t[0],t[1])]=no; }
+  var ties=[];
+  ["R32","R16","QF","SF","F"].forEach(function(key){
+    (kf[key]||[]).forEach(function(f){
+      if(f.date!==date) return;
+      var n=pkToNo[pairKey(f.home,f.away)]; if(!n) return;
+      ties.push({no:+n, home:abr.teams[n][0], away:abr.teams[n][1], round:roundOf[n]});
+    });
+  });
+  if(!ties.length) return '';
+  ties.sort(function(a,b){ return a.no-b.no; });
+  var rank=DP_RANK, html='';
+  ties.forEach(function(tie){
+    var no=tie.no, home=tie.home, away=tie.away, key=tie.round.key;
+    var act=R._koPairIndex[pairKey(home,away)];
+    var advs=(R.advancers&&R.advancers[key])||[]; var advActual=null;
+    if(advs.some(function(t){return normName(t)===normName(home);})) advActual=home;
+    else if(advs.some(function(t){return normName(t)===normName(away);})) advActual=away;
+    var resultStr, ah, aa;
+    if(act){
+      if(normName(act.home)===normName(home)){ ah=+act.h; aa=+act.a; } else { ah=+act.a; aa=+act.h; }
+      resultStr='<strong>'+ah+'–'+aa+'</strong> <span style="color:#1a7f37;font-weight:700;">90&prime;</span>'+(advActual?(' · '+esc(advActual)+' through'):'');
+    } else { resultStr='<span class="muted">not played yet</span>'; }
+    var rows=preds.map(function(e){
+      var ks=(e.koScores||{})[no], pa=(e.knockout||{})[no];
+      var has=ks&&ks.h!==""&&ks.a!=="";
+      var score='—', oc={cls:"none"}, advOK=false;
+      if(has){
+        var ph,pp;
+        if(normName(ks.home)===normName(home)){ ph=+ks.h; pp=+ks.a; } else { ph=+ks.a; pp=+ks.h; }
+        score=ph+'–'+pp;
+        if(act){
+          if(ph===ah&&pp===aa) oc={cls:"exact",pts:SCORING.koExact};
+          else if(Math.sign(ph-pp)===Math.sign(ah-aa)) oc={cls:"result",pts:SCORING.koResult};
+          else oc={cls:"wrong"};
+        }
+      }
+      if(advActual && pa && normName(pa)===normName(advActual)) advOK=true;
+      return {name:e.name||"?", u12:e.category==="Under 12", has:has, score:score, adv:pa, oc:oc, advOK:advOK};
+    }).sort(function(a,b){ return (rank[a.oc.cls]-rank[b.oc.cls])||a.name.localeCompare(b.name); });
+    var done=rows.filter(function(r){return r.has;}).length;
+    html+='<div class="ticket" style="padding:12px 14px;margin-bottom:10px;">' +
+      '<div class="flex ac jb" style="gap:8px;margin-bottom:6px;">' +
+        '<div style="font-weight:700;">'+(FLAGS[home]||"")+' '+esc(home)+' v '+esc(away)+' '+(FLAGS[away]||"")+'</div>' +
+        '<div class="md-pill">'+esc(tie.round.label)+'</div></div>' +
+      '<div style="font-size:13px;margin-bottom:8px;">Result: '+resultStr+' <span class="muted">· '+done+'/'+rows.length+' predicted</span></div>' +
+      '<div style="display:grid;gap:4px;font-size:13px;">';
+    rows.forEach(function(r){
+      var badge='';
+      if(r.oc.cls==="exact") badge=' <span style="background:#d8f0dd;color:#1a7f37;border-radius:6px;padding:1px 6px;font-size:11px;font-weight:700;">exact +'+r.oc.pts+'</span>';
+      else if(r.oc.cls==="result") badge=' <span style="background:#fbe6c8;color:#b4690e;border-radius:6px;padding:1px 6px;font-size:11px;font-weight:700;">+'+r.oc.pts+'</span>';
+      if(r.advOK) badge+=' <span style="background:#d8f0dd;color:#1a7f37;border-radius:6px;padding:1px 6px;font-size:11px;font-weight:700;">through +'+SCORING.koPerCorrect+'</span>';
+      var advTxt = (r.has && r.adv) ? ' <span style="color:#9a8d70;font-weight:400;">→ '+esc(r.adv)+'</span>' : '';
+      html += '<div class="flex ac jb"'+(r.has?'':' style="opacity:.5;"')+'>' +
+        '<span>'+esc(r.name)+(r.u12?' <span class="md-pill">U12</span>':'')+'</span>' +
+        '<span style="font-weight:700;'+(r.oc.cls==="wrong"?'color:#9a8d70;':'')+'">'+esc(r.score)+advTxt+badge+'</span></div>';
+    });
+    html += '</div></div>';
+  });
   return html;
 }
 function openDailyModal(preds, R){
   if(!preds || !preds.length) return;
-  var dates=matchDates(), sel=defaultDay(dates), today=todayStr();
+  var dates=matchDates(R), sel=defaultDay(dates), today=todayStr();
   var opts=dates.map(function(d){ return '<option value="'+esc(d)+'"'+(d===sel?' selected':'')+'>'+esc(d)+(d===today?' (today)':'')+'</option>'; }).join("");
   var html='<div class="flex ac jb" style="margin-bottom:10px;"><div class="display" style="font-size:20px;color:var(--red);">Predictions by day</div><button class="link" id="dp-close">Close</button></div>' +
     '<select class="field" id="dp-day" style="margin-bottom:12px;">'+opts+'</select>' +

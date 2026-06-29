@@ -136,6 +136,13 @@ async function fetchEvents() {
 // Score after 90 minutes (regulation only). ESPN exposes per-period goals in
 // `linescores`; summing the first two periods gives the 90' score and excludes
 // extra time. Falls back to the final `score` when period data isn't present.
+const MONTHS_ABBR = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+// Match day as "D Mon" (UTC), matching the group-stage date format used in the app.
+function dMon(iso) {
+  const dt = new Date(iso);
+  if (isNaN(dt)) return "";
+  return dt.getUTCDate() + " " + MONTHS_ABBR[dt.getUTCMonth()];
+}
 function regulationScore(c) {
   const ls = c && c.linescores;
   if (Array.isArray(ls) && ls.length >= 2 && ls[0] && ls[1] && ls[0].value != null && ls[1].value != null) {
@@ -175,7 +182,7 @@ function run() {
       // teams are real (skip "Winner Match N" placeholders for undrawn rounds).
       // This is what the app uses to show the correct ties.
       if (["R32","R16","QF","SF","F"].includes(bucket) && BY_NORM[norm(home)] && BY_NORM[norm(away)]) {
-        koFixtures[bucket].push({ home, away });
+        koFixtures[bucket].push({ home, away, date: dMon(ev.date) });
       }
       if (["R32","R16","QF","SF","F"].includes(bucket) && finished) {
         koScores.push({ home, away, h: regulationScore(homeC), a: regulationScore(awayC), round: bucket });
