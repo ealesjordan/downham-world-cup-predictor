@@ -294,7 +294,123 @@
         "a": "2"
       }
     },
-    "knockout": {}
+    "knockout": {
+      "73": "Canada",
+      "74": "Germany",
+      "75": "Morocco",
+      "76": "Brazil",
+      "77": "France",
+      "78": "Norway",
+      "79": "Mexico",
+      "80": "England",
+      "81": "USA",
+      "82": "Senegal",
+      "83": "Croatia",
+      "84": "Spain",
+      "85": "Switzerland",
+      "86": "Argentina",
+      "87": "Colombia",
+      "88": "Egypt"
+    },
+    "koScores": {
+      "73": {
+        "home": "South Africa",
+        "away": "Canada",
+        "h": "0",
+        "a": "2"
+      },
+      "74": {
+        "home": "Germany",
+        "away": "Paraguay",
+        "h": "1",
+        "a": "0"
+      },
+      "75": {
+        "home": "Netherlands",
+        "away": "Morocco",
+        "h": "1",
+        "a": "1"
+      },
+      "76": {
+        "home": "Brazil",
+        "away": "Japan",
+        "h": "2",
+        "a": "1"
+      },
+      "77": {
+        "home": "France",
+        "away": "Sweden",
+        "h": "3",
+        "a": "1"
+      },
+      "78": {
+        "home": "Ivory Coast",
+        "away": "Norway",
+        "h": "1",
+        "a": "1"
+      },
+      "79": {
+        "home": "Mexico",
+        "away": "Ecuador",
+        "h": "0",
+        "a": "0"
+      },
+      "80": {
+        "home": "England",
+        "away": "DR Congo",
+        "h": "3",
+        "a": "1"
+      },
+      "81": {
+        "home": "USA",
+        "away": "Bosnia & Herzegovina",
+        "h": "2",
+        "a": "0"
+      },
+      "82": {
+        "home": "Belgium",
+        "away": "Senegal",
+        "h": "1",
+        "a": "2"
+      },
+      "83": {
+        "home": "Portugal",
+        "away": "Croatia",
+        "h": "1",
+        "a": "1"
+      },
+      "84": {
+        "home": "Spain",
+        "away": "Austria",
+        "h": "2",
+        "a": "1"
+      },
+      "85": {
+        "home": "Switzerland",
+        "away": "Algeria",
+        "h": "2",
+        "a": "0"
+      },
+      "86": {
+        "home": "Argentina",
+        "away": "Cabo Verde",
+        "h": "4",
+        "a": "0"
+      },
+      "87": {
+        "home": "Colombia",
+        "away": "Ghana",
+        "h": "2",
+        "a": "0"
+      },
+      "88": {
+        "home": "Australia",
+        "away": "Egypt",
+        "h": "1",
+        "a": "2"
+      }
+    },
+    "updatedAt": "2026-06-29T00:00:00.000Z"
   },
   {
     "name": "lionel eales",
@@ -591,7 +707,123 @@
         "a": "1"
       }
     },
-    "knockout": {}
+    "knockout": {
+      "73": "Canada",
+      "74": "Germany",
+      "75": "Morocco",
+      "76": "Brazil",
+      "77": "France",
+      "78": "Norway",
+      "79": "Mexico",
+      "80": "England",
+      "81": "USA",
+      "82": "Senegal",
+      "83": "Portugal",
+      "84": "Spain",
+      "85": "Switzerland",
+      "86": "Argentina",
+      "87": "Colombia",
+      "88": "Egypt"
+    },
+    "koScores": {
+      "73": {
+        "home": "South Africa",
+        "away": "Canada",
+        "h": "1",
+        "a": "1"
+      },
+      "74": {
+        "home": "Germany",
+        "away": "Paraguay",
+        "h": "2",
+        "a": "0"
+      },
+      "75": {
+        "home": "Netherlands",
+        "away": "Morocco",
+        "h": "1",
+        "a": "1"
+      },
+      "76": {
+        "home": "Brazil",
+        "away": "Japan",
+        "h": "3",
+        "a": "0"
+      },
+      "77": {
+        "home": "France",
+        "away": "Sweden",
+        "h": "2",
+        "a": "0"
+      },
+      "78": {
+        "home": "Ivory Coast",
+        "away": "Norway",
+        "h": "1",
+        "a": "1"
+      },
+      "79": {
+        "home": "Mexico",
+        "away": "Ecuador",
+        "h": "1",
+        "a": "0"
+      },
+      "80": {
+        "home": "England",
+        "away": "DR Congo",
+        "h": "2",
+        "a": "0"
+      },
+      "81": {
+        "home": "USA",
+        "away": "Bosnia & Herzegovina",
+        "h": "3",
+        "a": "1"
+      },
+      "82": {
+        "home": "Belgium",
+        "away": "Senegal",
+        "h": "1",
+        "a": "1"
+      },
+      "83": {
+        "home": "Portugal",
+        "away": "Croatia",
+        "h": "1",
+        "a": "0"
+      },
+      "84": {
+        "home": "Spain",
+        "away": "Austria",
+        "h": "2",
+        "a": "0"
+      },
+      "85": {
+        "home": "Switzerland",
+        "away": "Algeria",
+        "h": "1",
+        "a": "1"
+      },
+      "86": {
+        "home": "Argentina",
+        "away": "Cabo Verde",
+        "h": "3",
+        "a": "0"
+      },
+      "87": {
+        "home": "Colombia",
+        "away": "Ghana",
+        "h": "1",
+        "a": "1"
+      },
+      "88": {
+        "home": "Australia",
+        "away": "Egypt",
+        "h": "1",
+        "a": "2"
+      }
+    },
+    "updatedAt": "2026-06-29T00:00:00.000Z"
   },
   {
     "name": "Allan Boardman",
@@ -888,7 +1120,123 @@
         "a": "1"
       }
     },
-    "knockout": {}
+    "knockout": {
+      "73": "Canada",
+      "74": "Germany",
+      "75": "Netherlands",
+      "76": "Brazil",
+      "77": "France",
+      "78": "Norway",
+      "79": "Mexico",
+      "80": "England",
+      "81": "USA",
+      "82": "Belgium",
+      "83": "Portugal",
+      "84": "Spain",
+      "85": "Switzerland",
+      "86": "Argentina",
+      "87": "Colombia",
+      "88": "Australia"
+    },
+    "koScores": {
+      "73": {
+        "home": "South Africa",
+        "away": "Canada",
+        "h": "1",
+        "a": "2"
+      },
+      "74": {
+        "home": "Germany",
+        "away": "Paraguay",
+        "h": "3",
+        "a": "0"
+      },
+      "75": {
+        "home": "Netherlands",
+        "away": "Morocco",
+        "h": "2",
+        "a": "2"
+      },
+      "76": {
+        "home": "Brazil",
+        "away": "Japan",
+        "h": "2",
+        "a": "1"
+      },
+      "77": {
+        "home": "France",
+        "away": "Sweden",
+        "h": "3",
+        "a": "1"
+      },
+      "78": {
+        "home": "Ivory Coast",
+        "away": "Norway",
+        "h": "2",
+        "a": "2"
+      },
+      "79": {
+        "home": "Mexico",
+        "away": "Ecuador",
+        "h": "3",
+        "a": "1"
+      },
+      "80": {
+        "home": "England",
+        "away": "DR Congo",
+        "h": "1",
+        "a": "0"
+      },
+      "81": {
+        "home": "USA",
+        "away": "Bosnia & Herzegovina",
+        "h": "2",
+        "a": "1"
+      },
+      "82": {
+        "home": "Belgium",
+        "away": "Senegal",
+        "h": "2",
+        "a": "2"
+      },
+      "83": {
+        "home": "Portugal",
+        "away": "Croatia",
+        "h": "1",
+        "a": "1"
+      },
+      "84": {
+        "home": "Spain",
+        "away": "Austria",
+        "h": "2",
+        "a": "0"
+      },
+      "85": {
+        "home": "Switzerland",
+        "away": "Algeria",
+        "h": "2",
+        "a": "1"
+      },
+      "86": {
+        "home": "Argentina",
+        "away": "Cabo Verde",
+        "h": "3",
+        "a": "0"
+      },
+      "87": {
+        "home": "Colombia",
+        "away": "Ghana",
+        "h": "3",
+        "a": "1"
+      },
+      "88": {
+        "home": "Australia",
+        "away": "Egypt",
+        "h": "1",
+        "a": "0"
+      }
+    },
+    "updatedAt": "2026-06-29T00:00:00.000Z"
   },
   {
     "name": "Claude AI",
@@ -1482,8 +1830,123 @@
         "a": "2"
       }
     },
-    "knockout": {},
-    "updatedAt": "2026-06-15T20:12:04.190Z"
+    "knockout": {
+      "73": "Canada",
+      "74": "Germany",
+      "75": "Netherlands",
+      "76": "Brazil",
+      "77": "France",
+      "78": "Norway",
+      "79": "Mexico",
+      "80": "England",
+      "81": "USA",
+      "82": "Senegal",
+      "83": "Croatia",
+      "84": "Spain",
+      "85": "Switzerland",
+      "86": "Argentina",
+      "87": "Colombia",
+      "88": "Egypt"
+    },
+    "updatedAt": "2026-06-29T00:00:00.000Z",
+    "koScores": {
+      "73": {
+        "home": "South Africa",
+        "away": "Canada",
+        "h": "0",
+        "a": "2"
+      },
+      "74": {
+        "home": "Germany",
+        "away": "Paraguay",
+        "h": "4",
+        "a": "1"
+      },
+      "75": {
+        "home": "Netherlands",
+        "away": "Morocco",
+        "h": "1",
+        "a": "1"
+      },
+      "76": {
+        "home": "Brazil",
+        "away": "Japan",
+        "h": "2",
+        "a": "1"
+      },
+      "77": {
+        "home": "France",
+        "away": "Sweden",
+        "h": "3",
+        "a": "0"
+      },
+      "78": {
+        "home": "Ivory Coast",
+        "away": "Norway",
+        "h": "1",
+        "a": "2"
+      },
+      "79": {
+        "home": "Mexico",
+        "away": "Ecuador",
+        "h": "2",
+        "a": "0"
+      },
+      "80": {
+        "home": "England",
+        "away": "DR Congo",
+        "h": "2",
+        "a": "0"
+      },
+      "81": {
+        "home": "USA",
+        "away": "Bosnia & Herzegovina",
+        "h": "3",
+        "a": "0"
+      },
+      "82": {
+        "home": "Belgium",
+        "away": "Senegal",
+        "h": "1",
+        "a": "2"
+      },
+      "83": {
+        "home": "Portugal",
+        "away": "Croatia",
+        "h": "1",
+        "a": "1"
+      },
+      "84": {
+        "home": "Spain",
+        "away": "Austria",
+        "h": "2",
+        "a": "1"
+      },
+      "85": {
+        "home": "Switzerland",
+        "away": "Algeria",
+        "h": "0",
+        "a": "0"
+      },
+      "86": {
+        "home": "Argentina",
+        "away": "Cabo Verde",
+        "h": "2",
+        "a": "0"
+      },
+      "87": {
+        "home": "Colombia",
+        "away": "Ghana",
+        "h": "1",
+        "a": "0"
+      },
+      "88": {
+        "home": "Australia",
+        "away": "Egypt",
+        "h": "1",
+        "a": "2"
+      }
+    }
   },
   {
     "name": "Oliver Boardman",
@@ -1780,6 +2243,122 @@
         "a": "2"
       }
     },
-    "knockout": {}
+    "knockout": {
+      "73": "Canada",
+      "74": "Germany",
+      "75": "Morocco",
+      "76": "Japan",
+      "77": "France",
+      "78": "Ivory Coast",
+      "79": "Mexico",
+      "80": "England",
+      "81": "USA",
+      "82": "Senegal",
+      "83": "Portugal",
+      "84": "Spain",
+      "85": "Switzerland",
+      "86": "Argentina",
+      "87": "Colombia",
+      "88": "Australia"
+    },
+    "koScores": {
+      "73": {
+        "home": "South Africa",
+        "away": "Canada",
+        "h": "1",
+        "a": "2"
+      },
+      "74": {
+        "home": "Germany",
+        "away": "Paraguay",
+        "h": "4",
+        "a": "0"
+      },
+      "75": {
+        "home": "Netherlands",
+        "away": "Morocco",
+        "h": "1",
+        "a": "1"
+      },
+      "76": {
+        "home": "Brazil",
+        "away": "Japan",
+        "h": "1",
+        "a": "2"
+      },
+      "77": {
+        "home": "France",
+        "away": "Sweden",
+        "h": "4",
+        "a": "1"
+      },
+      "78": {
+        "home": "Ivory Coast",
+        "away": "Norway",
+        "h": "2",
+        "a": "2"
+      },
+      "79": {
+        "home": "Mexico",
+        "away": "Ecuador",
+        "h": "1",
+        "a": "0"
+      },
+      "80": {
+        "home": "England",
+        "away": "DR Congo",
+        "h": "2",
+        "a": "1"
+      },
+      "81": {
+        "home": "USA",
+        "away": "Bosnia & Herzegovina",
+        "h": "2",
+        "a": "1"
+      },
+      "82": {
+        "home": "Belgium",
+        "away": "Senegal",
+        "h": "1",
+        "a": "1"
+      },
+      "83": {
+        "home": "Portugal",
+        "away": "Croatia",
+        "h": "2",
+        "a": "0"
+      },
+      "84": {
+        "home": "Spain",
+        "away": "Austria",
+        "h": "2",
+        "a": "0"
+      },
+      "85": {
+        "home": "Switzerland",
+        "away": "Algeria",
+        "h": "1",
+        "a": "0"
+      },
+      "86": {
+        "home": "Argentina",
+        "away": "Cabo Verde",
+        "h": "4",
+        "a": "0"
+      },
+      "87": {
+        "home": "Colombia",
+        "away": "Ghana",
+        "h": "2",
+        "a": "1"
+      },
+      "88": {
+        "home": "Australia",
+        "away": "Egypt",
+        "h": "1",
+        "a": "1"
+      }
+    },
+    "updatedAt": "2026-06-29T00:00:00.000Z"
   }
 ]
