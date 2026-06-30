@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-06-30T07:54:48.877Z",
+  "updatedAt": "2026-06-30T22:39:22.245Z",
   "groupScores": [
     {
       "home": "Mexico",
@@ -462,6 +462,13 @@
       "h": 1,
       "a": 1,
       "round": "R32"
+    },
+    {
+      "home": "Ivory Coast",
+      "away": "Norway",
+      "h": 1,
+      "a": 2,
+      "round": "R32"
     }
   ],
   "koFixtures": {
@@ -552,7 +559,13 @@
         "date": "4 Jul"
       }
     ],
-    "R16": [],
+    "R16": [
+      {
+        "home": "Brazil",
+        "away": "Norway",
+        "date": "5 Jul"
+      }
+    ],
     "QF": [],
     "SF": [],
     "F": []
@@ -596,7 +609,8 @@
       "Canada",
       "Brazil",
       "Paraguay",
-      "Morocco"
+      "Morocco",
+      "Norway"
     ],
     "R16": [],
     "QF": [],
