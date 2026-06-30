@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-06-29T22:20:11.481Z",
+  "updatedAt": "2026-06-30T07:54:48.877Z",
   "groupScores": [
     {
       "home": "Mexico",
@@ -448,6 +448,20 @@
       "h": 2,
       "a": 1,
       "round": "R32"
+    },
+    {
+      "home": "Germany",
+      "away": "Paraguay",
+      "h": 1,
+      "a": 1,
+      "round": "R32"
+    },
+    {
+      "home": "Netherlands",
+      "away": "Morocco",
+      "h": 1,
+      "a": 1,
+      "round": "R32"
     }
   ],
   "koFixtures": {
@@ -531,6 +545,11 @@
         "home": "Colombia",
         "away": "Ghana",
         "date": "4 Jul"
+      },
+      {
+        "home": "Canada",
+        "away": "Morocco",
+        "date": "4 Jul"
       }
     ],
     "R16": [],
@@ -575,7 +594,9 @@
   "advancers": {
     "R32": [
       "Canada",
-      "Brazil"
+      "Brazil",
+      "Paraguay",
+      "Morocco"
     ],
     "R16": [],
     "QF": [],
