@@ -164,6 +164,12 @@ function run() {
     const advancers = { R32: [], R16: [], QF: [], SF: [], F: [] };
     let champion = null;
 
+    // Collect knockout candidates (non-group, real teams). We assign their round
+    // by CHRONOLOGICAL ORDER + bracket size below rather than by date windows:
+    // knockout rounds never overlap in time, and date-window bucketing can't
+    // separate adjacent rounds once late-night kickoffs cross the UTC midnight
+    // boundary (which caused R16 ties to leak into R32).
+    const koCands = [];
     events.forEach(ev => {
       const comp = (ev.competitions && ev.competitions[0]) || null;
       if (!comp) return;
@@ -183,18 +189,27 @@ function run() {
         }
         return;
       }
-      // Record the actual knockout matchup (scheduled or finished) when both
-      // teams are real (skip "Winner Match N" placeholders for undrawn rounds).
-      // This is what the app uses to show the correct ties.
-      if (["R32","R16","QF","SF","F"].includes(bucket) && BY_NORM[norm(home)] && BY_NORM[norm(away)]) {
-        koFixtures[bucket].push({ home, away, date: dMon(ev.date) });
+      // Real-team knockout fixture (skip "Winner Match N" placeholders).
+      if (BY_NORM[norm(home)] && BY_NORM[norm(away)]) {
+        koCands.push({ t: Date.parse(ev.date) || 0, date: dMon(ev.date), home, away, finished, homeC, awayC });
       }
-      if (["R32","R16","QF","SF","F"].includes(bucket) && finished) {
-        koScores.push({ home, away, h: regulationScore(homeC), a: regulationScore(awayC), round: bucket });
-        const winner = homeC.winner ? home : (awayC.winner ? away : null);
+    });
+
+    // Rounds in chronological order with their bracket sizes (3rd-place playoff
+    // sits between the semis and the final; we don't track it).
+    const ROUND_SEQ = [["R32",16],["R16",8],["QF",4],["SF",2],["3P",1],["F",1]];
+    koCands.sort((a, b) => a.t - b.t);
+    koCands.forEach((c, i) => {
+      let round = null, acc = 0;
+      for (const [r, n] of ROUND_SEQ) { if (i < acc + n) { round = r; break; } acc += n; }
+      if (!round || round === "3P" || !koFixtures[round]) return;
+      koFixtures[round].push({ home: c.home, away: c.away, date: c.date });
+      if (c.finished) {
+        koScores.push({ home: c.home, away: c.away, h: regulationScore(c.homeC), a: regulationScore(c.awayC), round });
+        const winner = c.homeC.winner ? c.home : (c.awayC.winner ? c.away : null);
         if (winner) {
-          if (!advancers[bucket].includes(winner)) advancers[bucket].push(winner);
-          if (bucket === "F") champion = winner;
+          if (!advancers[round].includes(winner)) advancers[round].push(winner);
+          if (round === "F") champion = winner;
         }
       }
     });
