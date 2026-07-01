@@ -137,11 +137,16 @@ async function fetchEvents() {
 // `linescores`; summing the first two periods gives the 90' score and excludes
 // extra time. Falls back to the final `score` when period data isn't present.
 const MONTHS_ABBR = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-// Match day as "D Mon" (UTC), matching the group-stage date format used in the app.
+// Match day as "D Mon", matching the group-stage date format used in the app.
+// All 2026 venues are in the Americas (UTC-4…-7) and kick off afternoon/evening
+// local, so a late game (e.g. 9:30pm July 3 in Kansas City) is past midnight UTC.
+// Shift 7h before formatting so the date reflects the venue's matchday rather
+// than rolling onto the next UTC day.
 function dMon(iso) {
   const dt = new Date(iso);
   if (isNaN(dt)) return "";
-  return dt.getUTCDate() + " " + MONTHS_ABBR[dt.getUTCMonth()];
+  const local = new Date(dt.getTime() - 7 * 3600 * 1000);
+  return local.getUTCDate() + " " + MONTHS_ABBR[local.getUTCMonth()];
 }
 function regulationScore(c) {
   const ls = c && c.linescores;
