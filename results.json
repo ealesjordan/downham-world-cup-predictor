@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-07-03T08:27:33.359Z",
+  "updatedAt": "2026-07-03T22:15:24.636Z",
   "groupScores": [
     {
       "home": "Mexico",
@@ -525,6 +525,13 @@
       "h": 2,
       "a": 0,
       "round": "R32"
+    },
+    {
+      "home": "Australia",
+      "away": "Egypt",
+      "h": 1,
+      "a": 1,
+      "round": "R32"
     }
   ],
   "koFixtures": {
@@ -694,7 +701,8 @@
       "USA",
       "Spain",
       "Portugal",
-      "Switzerland"
+      "Switzerland",
+      "Egypt"
     ],
     "R16": [],
     "QF": [],
