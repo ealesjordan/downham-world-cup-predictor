@@ -267,7 +267,7 @@ function r32team(ref, tables, thirdBySlot){
   return null;
 }
 /* Returns { tables, qualThirds, thirdBySlot, teams:{matchNo:[a,b]} } and prunes invalid winners in place. */
-function computeBracket(preds, winners){
+function computeBracket(preds, winners, koOpp){
   var tables = computeTables(preds);
   var thirds = Object.keys(GROUPS).map(function(g){ return tables[g][2]; }).slice().sort(cmpTeam);
   var qualThirds = thirds.slice(0,8);
@@ -277,6 +277,9 @@ function computeBracket(preds, winners){
 
   var teams = {}, defByNo = {};
   R32DEF.forEach(function(d){ defByNo[d.m]=d; teams[d.m]=[ r32team(d.a,tables,thirdBySlot), r32team(d.b,tables,thirdBySlot) ]; });
+  // Correct R32 ties from the real fixtures BEFORE progression/pruning, so a
+  // corrected third that actually advanced isn't pruned out of later rounds.
+  if (koOpp) applyRealR32(teams, koOpp);
   ALLNOS.forEach(function(no){
     if (no>88){ var d=LATERMAP[no]; teams[no]=[ winners[d.a]||null, winners[d.b]||null ]; }
     var w=winners[no];
@@ -302,21 +305,25 @@ function actualGroupPreds(R){
 function openRounds(R){
   var open = { R32:false, R16:false, QF:false, SF:false, F:false };
   if(!R) return open;
+  var adv = R.advancers || {}, kf = R.koFixtures || {};
+  // A round opens once its qualifiers are known OR the real draw has produced at
+  // least one tie for it, so people can predict decided ties without waiting for
+  // the whole previous round to finish. Undecided ties show as "To be decided".
   if((R.qualifiedR32||[]).length === 32) open.R32 = true;
-  var adv = R.advancers || {};
-  if((adv.R32||[]).length === 16) open.R16 = true;
-  if((adv.R16||[]).length === 8)  open.QF  = true;
-  if((adv.QF ||[]).length === 4)  open.SF  = true;
-  if((adv.SF ||[]).length === 2)  open.F   = true;
+  if((adv.R32||[]).length === 16 || (kf.R16||[]).length) open.R16 = true;
+  if((adv.R16||[]).length === 8  || (kf.QF ||[]).length) open.QF  = true;
+  if((adv.QF ||[]).length === 4  || (kf.SF ||[]).length) open.SF  = true;
+  if((adv.SF ||[]).length === 2  || (kf.F  ||[]).length) open.F   = true;
   return open;
 }
 /* Round-by-round resolve: feeds actual group scores in, then progressively
    matches each round's advancers to deduce which team won each match number. */
 function actualBracket(R){
   var gp = actualGroupPreds(R);
+  var koOpp = (R && R._koOppR32) || {};
   var winners = {};
   ['R32','R16','QF','SF','F'].forEach(function(key){
-    var br = computeBracket(gp, winners); applyRealR32(br.teams, R);
+    var br = computeBracket(gp, winners, koOpp);
     var round = null; KO_ROUNDS.forEach(function(r){ if(r.key===key) round=r; });
     var adv = (R && R.advancers && R.advancers[key]) || [];
     if(!adv.length) return;
@@ -327,7 +334,7 @@ function actualBracket(R){
       else if (t[1] && advSet[normName(t[1])]) winners[no] = t[1];
     });
   });
-  var fin = computeBracket(gp, winners); applyRealR32(fin.teams, R); return fin;
+  return computeBracket(gp, winners, koOpp);
 }
 
 /* --------------------------- leaderboard --------------------------- */
@@ -370,8 +377,8 @@ function indexResults(R){
 // Correct each R32 tie's third-placed team using the real fixtures: every "3"
 // slot is anchored by a group winner/runner-up the app already gets right, so we
 // swap in that anchor's real opponent.
-function applyRealR32(teams, R){
-  var opp = (R && R._koOppR32) || {};
+function applyRealR32(teams, opp){
+  opp = opp || {};
   if (!Object.keys(opp).length) return teams;
   R32DEF.forEach(function(d){
     var t = teams[d.m]; if(!t) return;
