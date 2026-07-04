@@ -310,7 +310,15 @@
       "85": "Switzerland",
       "86": "Argentina",
       "87": "Colombia",
-      "88": "Egypt"
+      "88": "Egypt",
+      "89": "France",
+      "90": "Morocco",
+      "91": "Norway",
+      "92": "Mexico",
+      "93": "Spain",
+      "94": "USA",
+      "95": "Argentina",
+      "96": "Colombia"
     },
     "koScores": {
       "73": {
@@ -408,9 +416,57 @@
         "away": "Egypt",
         "h": "1",
         "a": "2"
+      },
+      "89": {
+        "home": "Paraguay",
+        "away": "France",
+        "h": "1",
+        "a": "3"
+      },
+      "90": {
+        "home": "Canada",
+        "away": "Morocco",
+        "h": "0",
+        "a": "2"
+      },
+      "91": {
+        "home": "Brazil",
+        "away": "Norway",
+        "h": "1",
+        "a": "2"
+      },
+      "92": {
+        "home": "Mexico",
+        "away": "England",
+        "h": "1",
+        "a": "1"
+      },
+      "93": {
+        "home": "Portugal",
+        "away": "Spain",
+        "h": "0",
+        "a": "2"
+      },
+      "94": {
+        "home": "USA",
+        "away": "Belgium",
+        "h": "2",
+        "a": "1"
+      },
+      "95": {
+        "home": "Argentina",
+        "away": "Egypt",
+        "h": "3",
+        "a": "1"
+      },
+      "96": {
+        "home": "Switzerland",
+        "away": "Colombia",
+        "h": "0",
+        "a": "0"
       }
     },
-    "updatedAt": "2026-06-29T00:00:00.000Z"
+    "updatedAt": "2026-07-04T12:00:00.000Z"
   },
   {
     "name": "lionel eales",
@@ -723,7 +779,15 @@
       "85": "Switzerland",
       "86": "Argentina",
       "87": "Colombia",
-      "88": "Egypt"
+      "88": "Egypt",
+      "89": "France",
+      "90": "Morocco",
+      "91": "Norway",
+      "92": "England",
+      "93": "Spain",
+      "94": "USA",
+      "95": "Argentina",
+      "96": "Colombia"
     },
     "koScores": {
       "73": {
@@ -821,9 +885,57 @@
         "away": "Egypt",
         "h": "1",
         "a": "2"
+      },
+      "89": {
+        "home": "Paraguay",
+        "away": "France",
+        "h": "1",
+        "a": "2"
+      },
+      "90": {
+        "home": "Canada",
+        "away": "Morocco",
+        "h": "1",
+        "a": "1"
+      },
+      "91": {
+        "home": "Brazil",
+        "away": "Norway",
+        "h": "2",
+        "a": "2"
+      },
+      "92": {
+        "home": "Mexico",
+        "away": "England",
+        "h": "1",
+        "a": "2"
+      },
+      "93": {
+        "home": "Portugal",
+        "away": "Spain",
+        "h": "2",
+        "a": "2"
+      },
+      "94": {
+        "home": "USA",
+        "away": "Belgium",
+        "h": "2",
+        "a": "1"
+      },
+      "95": {
+        "home": "Argentina",
+        "away": "Egypt",
+        "h": "1",
+        "a": "1"
+      },
+      "96": {
+        "home": "Switzerland",
+        "away": "Colombia",
+        "h": "0",
+        "a": "1"
       }
     },
-    "updatedAt": "2026-06-29T00:00:00.000Z"
+    "updatedAt": "2026-07-04T12:00:00.000Z"
   },
   {
     "name": "Allan Boardman",
@@ -1136,7 +1248,15 @@
       "85": "Switzerland",
       "86": "Argentina",
       "87": "Colombia",
-      "88": "Australia"
+      "88": "Australia",
+      "89": "France",
+      "90": "Morocco",
+      "91": "Brazil",
+      "92": "England",
+      "93": "Spain",
+      "94": "USA",
+      "95": "Argentina",
+      "96": "Colombia"
     },
     "koScores": {
       "73": {
@@ -1234,9 +1354,57 @@
         "away": "Egypt",
         "h": "1",
         "a": "0"
+      },
+      "89": {
+        "home": "Paraguay",
+        "away": "France",
+        "h": "1",
+        "a": "3"
+      },
+      "90": {
+        "home": "Canada",
+        "away": "Morocco",
+        "h": "1",
+        "a": "2"
+      },
+      "91": {
+        "home": "Brazil",
+        "away": "Norway",
+        "h": "2",
+        "a": "2"
+      },
+      "92": {
+        "home": "Mexico",
+        "away": "England",
+        "h": "2",
+        "a": "2"
+      },
+      "93": {
+        "home": "Portugal",
+        "away": "Spain",
+        "h": "1",
+        "a": "2"
+      },
+      "94": {
+        "home": "USA",
+        "away": "Belgium",
+        "h": "2",
+        "a": "1"
+      },
+      "95": {
+        "home": "Argentina",
+        "away": "Egypt",
+        "h": "3",
+        "a": "1"
+      },
+      "96": {
+        "home": "Switzerland",
+        "away": "Colombia",
+        "h": "1",
+        "a": "1"
       }
     },
-    "updatedAt": "2026-06-29T00:00:00.000Z"
+    "updatedAt": "2026-07-04T12:00:00.000Z"
   },
   {
     "name": "Claude AI",
@@ -1548,7 +1716,15 @@
       "85": "Switzerland",
       "86": "Argentina",
       "87": "Colombia",
-      "88": "Egypt"
+      "88": "Egypt",
+      "89": "France",
+      "90": "Morocco",
+      "91": "Brazil",
+      "92": "England",
+      "93": "Spain",
+      "94": "Belgium",
+      "95": "Argentina",
+      "96": "Colombia"
     },
     "koScores": {
       "74": {
@@ -1640,9 +1816,57 @@
         "away": "Egypt",
         "h": "0",
         "a": "1"
+      },
+      "89": {
+        "home": "Paraguay",
+        "away": "France",
+        "h": "0",
+        "a": "2"
+      },
+      "90": {
+        "home": "Canada",
+        "away": "Morocco",
+        "h": "1",
+        "a": "2"
+      },
+      "91": {
+        "home": "Brazil",
+        "away": "Norway",
+        "h": "2",
+        "a": "1"
+      },
+      "92": {
+        "home": "Mexico",
+        "away": "England",
+        "h": "1",
+        "a": "2"
+      },
+      "93": {
+        "home": "Portugal",
+        "away": "Spain",
+        "h": "1",
+        "a": "2"
+      },
+      "94": {
+        "home": "USA",
+        "away": "Belgium",
+        "h": "1",
+        "a": "2"
+      },
+      "95": {
+        "home": "Argentina",
+        "away": "Egypt",
+        "h": "3",
+        "a": "0"
+      },
+      "96": {
+        "home": "Switzerland",
+        "away": "Colombia",
+        "h": "1",
+        "a": "2"
       }
     },
-    "updatedAt": "2026-06-29T00:00:00.000Z"
+    "updatedAt": "2026-07-04T12:00:00.000Z"
   },
   {
     "name": "Sam Eales",
@@ -1955,9 +2179,17 @@
       "85": "Switzerland",
       "86": "Argentina",
       "87": "Colombia",
-      "88": "Egypt"
+      "88": "Egypt",
+      "89": "France",
+      "90": "Morocco",
+      "91": "Brazil",
+      "92": "England",
+      "93": "Spain",
+      "94": "Belgium",
+      "95": "Argentina",
+      "96": "Colombia"
     },
-    "updatedAt": "2026-06-29T00:00:00.000Z",
+    "updatedAt": "2026-07-04T12:00:00.000Z",
     "koScores": {
       "73": {
         "home": "South Africa",
@@ -2054,6 +2286,54 @@
         "away": "Egypt",
         "h": "1",
         "a": "2"
+      },
+      "89": {
+        "home": "Paraguay",
+        "away": "France",
+        "h": "0",
+        "a": "3"
+      },
+      "90": {
+        "home": "Canada",
+        "away": "Morocco",
+        "h": "1",
+        "a": "2"
+      },
+      "91": {
+        "home": "Brazil",
+        "away": "Norway",
+        "h": "1",
+        "a": "1"
+      },
+      "92": {
+        "home": "Mexico",
+        "away": "England",
+        "h": "1",
+        "a": "2"
+      },
+      "93": {
+        "home": "Portugal",
+        "away": "Spain",
+        "h": "2",
+        "a": "3"
+      },
+      "94": {
+        "home": "USA",
+        "away": "Belgium",
+        "h": "0",
+        "a": "1"
+      },
+      "95": {
+        "home": "Argentina",
+        "away": "Egypt",
+        "h": "2",
+        "a": "0"
+      },
+      "96": {
+        "home": "Switzerland",
+        "away": "Colombia",
+        "h": "0",
+        "a": "1"
       }
     }
   },
@@ -2368,7 +2648,15 @@
       "85": "Switzerland",
       "86": "Argentina",
       "87": "Colombia",
-      "88": "Australia"
+      "88": "Australia",
+      "89": "France",
+      "90": "Morocco",
+      "91": "Brazil",
+      "92": "England",
+      "93": "Spain",
+      "94": "USA",
+      "95": "Argentina",
+      "96": "Colombia"
     },
     "koScores": {
       "73": {
@@ -2466,8 +2754,56 @@
         "away": "Egypt",
         "h": "1",
         "a": "1"
+      },
+      "89": {
+        "home": "Paraguay",
+        "away": "France",
+        "h": "0",
+        "a": "4"
+      },
+      "90": {
+        "home": "Canada",
+        "away": "Morocco",
+        "h": "0",
+        "a": "1"
+      },
+      "91": {
+        "home": "Brazil",
+        "away": "Norway",
+        "h": "2",
+        "a": "2"
+      },
+      "92": {
+        "home": "Mexico",
+        "away": "England",
+        "h": "2",
+        "a": "2"
+      },
+      "93": {
+        "home": "Portugal",
+        "away": "Spain",
+        "h": "1",
+        "a": "2"
+      },
+      "94": {
+        "home": "USA",
+        "away": "Belgium",
+        "h": "2",
+        "a": "1"
+      },
+      "95": {
+        "home": "Argentina",
+        "away": "Egypt",
+        "h": "3",
+        "a": "1"
+      },
+      "96": {
+        "home": "Switzerland",
+        "away": "Colombia",
+        "h": "1",
+        "a": "1"
       }
     },
-    "updatedAt": "2026-06-29T00:00:00.000Z"
+    "updatedAt": "2026-07-04T12:00:00.000Z"
   }
 ]
