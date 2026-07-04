@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-07-04T08:05:00.904Z",
+  "updatedAt": "2026-07-04T22:10:27.570Z",
   "groupScores": [
     {
       "home": "Mexico",
@@ -546,6 +546,13 @@
       "h": 1,
       "a": 0,
       "round": "R32"
+    },
+    {
+      "home": "Canada",
+      "away": "Morocco",
+      "h": 0,
+      "a": 3,
+      "round": "R16"
     }
   ],
   "koFixtures": {
@@ -730,7 +737,9 @@
       "Argentina",
       "Colombia"
     ],
-    "R16": [],
+    "R16": [
+      "Morocco"
+    ],
     "QF": [],
     "SF": [],
     "F": []
