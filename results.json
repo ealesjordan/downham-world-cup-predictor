@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-07-04T22:10:27.570Z",
+  "updatedAt": "2026-07-05T08:16:13.380Z",
   "groupScores": [
     {
       "home": "Mexico",
@@ -553,6 +553,13 @@
       "h": 0,
       "a": 3,
       "round": "R16"
+    },
+    {
+      "home": "Paraguay",
+      "away": "France",
+      "h": 0,
+      "a": 1,
+      "round": "R16"
     }
   ],
   "koFixtures": {
@@ -680,7 +687,13 @@
         "date": "7 Jul"
       }
     ],
-    "QF": [],
+    "QF": [
+      {
+        "home": "France",
+        "away": "Morocco",
+        "date": "9 Jul"
+      }
+    ],
     "SF": [],
     "F": []
   },
@@ -738,7 +751,8 @@
       "Colombia"
     ],
     "R16": [
-      "Morocco"
+      "Morocco",
+      "France"
     ],
     "QF": [],
     "SF": [],
