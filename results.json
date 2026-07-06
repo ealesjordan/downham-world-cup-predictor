@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-07-05T22:12:25.900Z",
+  "updatedAt": "2026-07-06T09:10:04.561Z",
   "groupScores": [
     {
       "home": "Mexico",
@@ -567,6 +567,13 @@
       "h": 1,
       "a": 2,
       "round": "R16"
+    },
+    {
+      "home": "Mexico",
+      "away": "England",
+      "h": 2,
+      "a": 3,
+      "round": "R16"
     }
   ],
   "koFixtures": {
@@ -699,6 +706,11 @@
         "home": "France",
         "away": "Morocco",
         "date": "9 Jul"
+      },
+      {
+        "home": "Norway",
+        "away": "England",
+        "date": "11 Jul"
       }
     ],
     "SF": [],
@@ -760,7 +772,8 @@
     "R16": [
       "Morocco",
       "France",
-      "Norway"
+      "Norway",
+      "England"
     ],
     "QF": [],
     "SF": [],
