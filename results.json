@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-07-07T22:30:07.993Z",
+  "updatedAt": "2026-07-08T06:23:05.521Z",
   "groupScores": [
     {
       "home": "Mexico",
@@ -595,6 +595,13 @@
       "h": 3,
       "a": 2,
       "round": "R16"
+    },
+    {
+      "home": "Switzerland",
+      "away": "Colombia",
+      "h": 0,
+      "a": 0,
+      "round": "R16"
     }
   ],
   "koFixtures": {
@@ -737,6 +744,11 @@
         "home": "Norway",
         "away": "England",
         "date": "11 Jul"
+      },
+      {
+        "home": "Argentina",
+        "away": "Switzerland",
+        "date": "11 Jul"
       }
     ],
     "SF": [],
@@ -802,7 +814,8 @@
       "England",
       "Spain",
       "Belgium",
-      "Argentina"
+      "Argentina",
+      "Switzerland"
     ],
     "QF": [],
     "SF": [],
