@@ -318,7 +318,11 @@
       "93": "Spain",
       "94": "USA",
       "95": "Argentina",
-      "96": "Colombia"
+      "96": "Colombia",
+      "97": "France",
+      "98": "Spain",
+      "99": "England",
+      "100": "Argentina"
     },
     "koScores": {
       "73": {
@@ -464,9 +468,33 @@
         "away": "Colombia",
         "h": "0",
         "a": "0"
+      },
+      "97": {
+        "home": "France",
+        "away": "Morocco",
+        "h": "2",
+        "a": "1"
+      },
+      "98": {
+        "home": "Spain",
+        "away": "Belgium",
+        "h": "3",
+        "a": "0"
+      },
+      "99": {
+        "home": "Norway",
+        "away": "England",
+        "h": "2",
+        "a": "2"
+      },
+      "100": {
+        "home": "Argentina",
+        "away": "Switzerland",
+        "h": "1",
+        "a": "1"
       }
     },
-    "updatedAt": "2026-07-04T12:00:00.000Z"
+    "updatedAt": "2026-07-09T12:00:00.000Z"
   },
   {
     "name": "lionel eales",
@@ -787,7 +815,11 @@
       "93": "Spain",
       "94": "USA",
       "95": "Argentina",
-      "96": "Colombia"
+      "96": "Colombia",
+      "97": "France",
+      "98": "Spain",
+      "99": "England",
+      "100": "Switzerland"
     },
     "koScores": {
       "73": {
@@ -933,9 +965,33 @@
         "away": "Colombia",
         "h": "0",
         "a": "1"
+      },
+      "97": {
+        "home": "France",
+        "away": "Morocco",
+        "h": "2",
+        "a": "1"
+      },
+      "98": {
+        "home": "Spain",
+        "away": "Belgium",
+        "h": "2",
+        "a": "1"
+      },
+      "99": {
+        "home": "Norway",
+        "away": "England",
+        "h": "1",
+        "a": "3"
+      },
+      "100": {
+        "home": "Argentina",
+        "away": "Switzerland",
+        "h": "1",
+        "a": "1"
       }
     },
-    "updatedAt": "2026-07-04T12:00:00.000Z"
+    "updatedAt": "2026-07-09T12:00:00.000Z"
   },
   {
     "name": "Allan Boardman",
@@ -1256,7 +1312,11 @@
       "93": "Spain",
       "94": "USA",
       "95": "Argentina",
-      "96": "Colombia"
+      "96": "Colombia",
+      "97": "France",
+      "98": "Belgium",
+      "99": "England",
+      "100": "Argentina"
     },
     "koScores": {
       "73": {
@@ -1402,9 +1462,33 @@
         "away": "Colombia",
         "h": "1",
         "a": "1"
+      },
+      "97": {
+        "home": "France",
+        "away": "Morocco",
+        "h": "3",
+        "a": "1"
+      },
+      "98": {
+        "home": "Spain",
+        "away": "Belgium",
+        "h": "1",
+        "a": "2"
+      },
+      "99": {
+        "home": "Norway",
+        "away": "England",
+        "h": "2",
+        "a": "3"
+      },
+      "100": {
+        "home": "Argentina",
+        "away": "Switzerland",
+        "h": "2",
+        "a": "0"
       }
     },
-    "updatedAt": "2026-07-04T12:00:00.000Z"
+    "updatedAt": "2026-07-09T12:00:00.000Z"
   },
   {
     "name": "Claude AI",
@@ -2187,9 +2271,13 @@
       "93": "Spain",
       "94": "Belgium",
       "95": "Argentina",
-      "96": "Colombia"
+      "96": "Colombia",
+      "97": "France",
+      "98": "Belgium",
+      "99": "England",
+      "100": "Argentina"
     },
-    "updatedAt": "2026-07-04T12:00:00.000Z",
+    "updatedAt": "2026-07-09T12:00:00.000Z",
     "koScores": {
       "73": {
         "home": "South Africa",
@@ -2334,6 +2422,30 @@
         "away": "Colombia",
         "h": "0",
         "a": "1"
+      },
+      "97": {
+        "home": "France",
+        "away": "Morocco",
+        "h": "3",
+        "a": "1"
+      },
+      "98": {
+        "home": "Spain",
+        "away": "Belgium",
+        "h": "1",
+        "a": "1"
+      },
+      "99": {
+        "home": "Norway",
+        "away": "England",
+        "h": "2",
+        "a": "4"
+      },
+      "100": {
+        "home": "Argentina",
+        "away": "Switzerland",
+        "h": "1",
+        "a": "0"
       }
     }
   },
@@ -2656,7 +2768,11 @@
       "93": "Spain",
       "94": "USA",
       "95": "Argentina",
-      "96": "Colombia"
+      "96": "Colombia",
+      "97": "France",
+      "98": "Spain",
+      "99": "England",
+      "100": "Argentina"
     },
     "koScores": {
       "73": {
@@ -2802,8 +2918,32 @@
         "away": "Colombia",
         "h": "1",
         "a": "1"
+      },
+      "97": {
+        "home": "France",
+        "away": "Morocco",
+        "h": "2",
+        "a": "1"
+      },
+      "98": {
+        "home": "Spain",
+        "away": "Belgium",
+        "h": "1",
+        "a": "1"
+      },
+      "99": {
+        "home": "Norway",
+        "away": "England",
+        "h": "2",
+        "a": "2"
+      },
+      "100": {
+        "home": "Argentina",
+        "away": "Switzerland",
+        "h": "2",
+        "a": "1"
       }
     },
-    "updatedAt": "2026-07-04T12:00:00.000Z"
+    "updatedAt": "2026-07-09T12:00:00.000Z"
   }
 ]
