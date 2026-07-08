@@ -1808,7 +1808,11 @@
       "93": "Spain",
       "94": "Belgium",
       "95": "Argentina",
-      "96": "Colombia"
+      "96": "Colombia",
+      "97": "France",
+      "98": "Spain",
+      "99": "England",
+      "100": "Argentina"
     },
     "koScores": {
       "74": {
@@ -1948,9 +1952,33 @@
         "away": "Colombia",
         "h": "1",
         "a": "2"
+      },
+      "97": {
+        "home": "France",
+        "away": "Morocco",
+        "h": "2",
+        "a": "0"
+      },
+      "98": {
+        "home": "Spain",
+        "away": "Belgium",
+        "h": "2",
+        "a": "1"
+      },
+      "99": {
+        "home": "Norway",
+        "away": "England",
+        "h": "1",
+        "a": "2"
+      },
+      "100": {
+        "home": "Argentina",
+        "away": "Switzerland",
+        "h": "2",
+        "a": "0"
       }
     },
-    "updatedAt": "2026-07-04T12:00:00.000Z"
+    "updatedAt": "2026-07-09T12:05:00.000Z"
   },
   {
     "name": "Sam Eales",
