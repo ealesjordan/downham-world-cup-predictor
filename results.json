@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-07-09T22:42:31.363Z",
+  "updatedAt": "2026-07-10T22:14:54.373Z",
   "groupScores": [
     {
       "home": "Mexico",
@@ -609,6 +609,13 @@
       "h": 2,
       "a": 0,
       "round": "QF"
+    },
+    {
+      "home": "Spain",
+      "away": "Belgium",
+      "h": 2,
+      "a": 1,
+      "round": "QF"
     }
   ],
   "koFixtures": {
@@ -758,7 +765,13 @@
         "date": "11 Jul"
       }
     ],
-    "SF": [],
+    "SF": [
+      {
+        "home": "France",
+        "away": "Spain",
+        "date": "14 Jul"
+      }
+    ],
     "F": []
   },
   "qualifiedR32": [
@@ -825,7 +838,8 @@
       "Switzerland"
     ],
     "QF": [
-      "France"
+      "France",
+      "Spain"
     ],
     "SF": [],
     "F": []
