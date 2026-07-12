@@ -133,9 +133,6 @@ async function fetchEvents() {
   return Array.from(byId.values());
 }
 
-// Score after 90 minutes (regulation only). ESPN exposes per-period goals in
-// `linescores`; summing the first two periods gives the 90' score and excludes
-// extra time. Falls back to the final `score` when period data isn't present.
 const MONTHS_ABBR = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 // Match day as "D Mon", matching the group-stage date format used in the app.
 // All 2026 venues are in the Americas (UTC-4…-7) and kick off afternoon/evening
@@ -148,12 +145,31 @@ function dMon(iso) {
   const local = new Date(dt.getTime() - 7 * 3600 * 1000);
   return local.getUTCDate() + " " + MONTHS_ABBR[local.getUTCMonth()];
 }
-function regulationScore(c) {
-  const ls = c && c.linescores;
-  if (Array.isArray(ls) && ls.length >= 2 && ls[0] && ls[1] && ls[0].value != null && ls[1].value != null) {
-    return Number(ls[0].value) + Number(ls[1].value);
+// The 90-minute score for a knockout tie. Predictions are for the score after
+// 90 minutes, but ESPN's `score` field includes extra-time goals. When a match
+// finished in normal time (status "FT") that score IS the 90-minute score; when
+// it went to extra time ("AET") or penalties ("FT-Pens") we recount only the
+// goals scored in regulation (minute <= 90, including stoppage) from the event
+// `details` log. Own goals are credited to the opposing team.
+function ninetyMinuteScore(comp, homeC, awayC) {
+  const detail = (comp && comp.status && comp.status.type && comp.status.type.detail) || "";
+  if (!/aet|pen|extra/i.test(detail)) {
+    return { h: Number(homeC.score), a: Number(awayC.score) };
   }
-  return Number(c && c.score);
+  const homeId = String(homeC.team && homeC.team.id);
+  const awayId = String(awayC.team && awayC.team.id);
+  let h = 0, a = 0;
+  (comp.details || []).forEach(d => {
+    if (!d || !d.scoringPlay || d.shootout) return;
+    const minute = parseInt(d.clock && d.clock.displayValue, 10); // "90'+2'" -> 90
+    if (!(minute <= 90)) return; // regulation only; extra-time goals are 91'+
+    let scorer = String(d.team && d.team.id);
+    if (d.ownGoal) scorer = (scorer === homeId ? awayId : homeId);
+    const val = d.scoreValue || 1;
+    if (scorer === homeId) h += val;
+    else if (scorer === awayId) a += val;
+  });
+  return { h, a };
 }
 
 function run() {
@@ -205,15 +221,8 @@ function run() {
       if (!round || round === "3P" || !koFixtures[round]) return;
       koFixtures[round].push({ home: c.home, away: c.away, date: c.date });
       if (c.finished) {
-        try {
-          var cmp = c.comp || {};
-          console.log("KO_DBG2 " + round + " | " + c.home + " v " + c.away +
-            " | compKeys=" + Object.keys(cmp).join(",") +
-            " | statusDetail=" + (cmp.status && cmp.status.type && cmp.status.type.detail) +
-            " | detailsN=" + (Array.isArray(cmp.details) ? cmp.details.length : "none") +
-            " | detail0=" + JSON.stringify((cmp.details || [])[0]));
-        } catch (e) { console.log("KO_DBG2 err " + e.message); }
-        koScores.push({ home: c.home, away: c.away, h: regulationScore(c.homeC), a: regulationScore(c.awayC), round });
+        const nm = ninetyMinuteScore(c.comp, c.homeC, c.awayC);
+        koScores.push({ home: c.home, away: c.away, h: nm.h, a: nm.a, round });
         const winner = c.homeC.winner ? c.home : (c.awayC.winner ? c.away : null);
         if (winner) {
           if (!advancers[round].includes(winner)) advancers[round].push(winner);
