@@ -205,6 +205,13 @@ function run() {
       if (!round || round === "3P" || !koFixtures[round]) return;
       koFixtures[round].push({ home: c.home, away: c.away, date: c.date });
       if (c.finished) {
+        try {
+          console.log("KO_DBG " + round + " | " + c.home + " v " + c.away +
+            " | score " + c.homeC.score + "-" + c.awayC.score +
+            " | ls_home " + JSON.stringify(c.homeC.linescores) +
+            " | ls_away " + JSON.stringify(c.awayC.linescores) +
+            " | homeKeys " + Object.keys(c.homeC).join(","));
+        } catch (e) {}
         koScores.push({ home: c.home, away: c.away, h: regulationScore(c.homeC), a: regulationScore(c.awayC), round });
         const winner = c.homeC.winner ? c.home : (c.awayC.winner ? c.away : null);
         if (winner) {
