@@ -191,7 +191,7 @@ function run() {
       }
       // Real-team knockout fixture (skip "Winner Match N" placeholders).
       if (BY_NORM[norm(home)] && BY_NORM[norm(away)]) {
-        koCands.push({ t: Date.parse(ev.date) || 0, date: dMon(ev.date), home, away, finished, homeC, awayC });
+        koCands.push({ t: Date.parse(ev.date) || 0, date: dMon(ev.date), home, away, finished, homeC, awayC, comp });
       }
     });
 
@@ -206,12 +206,13 @@ function run() {
       koFixtures[round].push({ home: c.home, away: c.away, date: c.date });
       if (c.finished) {
         try {
-          console.log("KO_DBG " + round + " | " + c.home + " v " + c.away +
-            " | score " + c.homeC.score + "-" + c.awayC.score +
-            " | ls_home " + JSON.stringify(c.homeC.linescores) +
-            " | ls_away " + JSON.stringify(c.awayC.linescores) +
-            " | homeKeys " + Object.keys(c.homeC).join(","));
-        } catch (e) {}
+          var cmp = c.comp || {};
+          console.log("KO_DBG2 " + round + " | " + c.home + " v " + c.away +
+            " | compKeys=" + Object.keys(cmp).join(",") +
+            " | statusDetail=" + (cmp.status && cmp.status.type && cmp.status.type.detail) +
+            " | detailsN=" + (Array.isArray(cmp.details) ? cmp.details.length : "none") +
+            " | detail0=" + JSON.stringify((cmp.details || [])[0]));
+        } catch (e) { console.log("KO_DBG2 err " + e.message); }
         koScores.push({ home: c.home, away: c.away, h: regulationScore(c.homeC), a: regulationScore(c.awayC), round });
         const winner = c.homeC.winner ? c.home : (c.awayC.winner ? c.away : null);
         if (winner) {
