@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-07-12T07:37:30.558Z",
+  "updatedAt": "2026-07-12T07:56:53.528Z",
   "groupScores": [
     {
       "home": "Mexico",
@@ -494,7 +494,7 @@
     {
       "home": "Belgium",
       "away": "Senegal",
-      "h": 3,
+      "h": 2,
       "a": 2,
       "round": "R32"
     },
@@ -529,15 +529,15 @@
     {
       "home": "Australia",
       "away": "Egypt",
-      "h": 1,
-      "a": 1,
+      "h": 0,
+      "a": 2,
       "round": "R32"
     },
     {
       "home": "Argentina",
       "away": "Cabo Verde",
-      "h": 3,
-      "a": 2,
+      "h": 1,
+      "a": 1,
       "round": "R32"
     },
     {
@@ -621,13 +621,13 @@
       "home": "Norway",
       "away": "England",
       "h": 1,
-      "a": 2,
+      "a": 1,
       "round": "QF"
     },
     {
       "home": "Argentina",
       "away": "Switzerland",
-      "h": 3,
+      "h": 1,
       "a": 1,
       "round": "QF"
     }
