@@ -322,7 +322,9 @@
       "97": "France",
       "98": "Spain",
       "99": "England",
-      "100": "Argentina"
+      "100": "Argentina",
+      "101": "France",
+      "102": "Argentina"
     },
     "koScores": {
       "73": {
@@ -492,9 +494,21 @@
         "away": "Switzerland",
         "h": "1",
         "a": "1"
+      },
+      "101": {
+        "home": "France",
+        "away": "Spain",
+        "h": "2",
+        "a": "1"
+      },
+      "102": {
+        "home": "England",
+        "away": "Argentina",
+        "h": "1",
+        "a": "2"
       }
     },
-    "updatedAt": "2026-07-09T12:00:00.000Z"
+    "updatedAt": "2026-07-15T12:00:00.000Z"
   },
   {
     "name": "lionel eales",
@@ -819,7 +833,9 @@
       "97": "France",
       "98": "Spain",
       "99": "England",
-      "100": "Switzerland"
+      "100": "Switzerland",
+      "101": "France",
+      "102": "England"
     },
     "koScores": {
       "73": {
@@ -989,9 +1005,21 @@
         "away": "Switzerland",
         "h": "1",
         "a": "1"
+      },
+      "101": {
+        "home": "France",
+        "away": "Spain",
+        "h": "3",
+        "a": "1"
+      },
+      "102": {
+        "home": "England",
+        "away": "Argentina",
+        "h": "2",
+        "a": "2"
       }
     },
-    "updatedAt": "2026-07-09T12:00:00.000Z"
+    "updatedAt": "2026-07-15T12:00:00.000Z"
   },
   {
     "name": "Allan Boardman",
@@ -1316,7 +1344,9 @@
       "97": "France",
       "98": "Belgium",
       "99": "England",
-      "100": "Argentina"
+      "100": "Argentina",
+      "101": "France",
+      "102": "England"
     },
     "koScores": {
       "73": {
@@ -1486,9 +1516,21 @@
         "away": "Switzerland",
         "h": "2",
         "a": "0"
+      },
+      "101": {
+        "home": "France",
+        "away": "Spain",
+        "h": "3",
+        "a": "1"
+      },
+      "102": {
+        "home": "England",
+        "away": "Argentina",
+        "h": "2",
+        "a": "2"
       }
     },
-    "updatedAt": "2026-07-09T12:00:00.000Z"
+    "updatedAt": "2026-07-15T12:00:00.000Z"
   },
   {
     "name": "Claude AI",
@@ -1812,7 +1854,9 @@
       "97": "France",
       "98": "Spain",
       "99": "England",
-      "100": "Argentina"
+      "100": "Argentina",
+      "101": "France",
+      "102": "Argentina"
     },
     "koScores": {
       "74": {
@@ -1976,9 +2020,21 @@
         "away": "Switzerland",
         "h": "2",
         "a": "0"
+      },
+      "101": {
+        "home": "France",
+        "away": "Spain",
+        "h": "2",
+        "a": "1"
+      },
+      "102": {
+        "home": "England",
+        "away": "Argentina",
+        "h": "1",
+        "a": "2"
       }
     },
-    "updatedAt": "2026-07-09T12:05:00.000Z"
+    "updatedAt": "2026-07-15T12:00:00.000Z"
   },
   {
     "name": "Sam Eales",
@@ -2303,9 +2359,11 @@
       "97": "France",
       "98": "Belgium",
       "99": "England",
-      "100": "Argentina"
+      "100": "Argentina",
+      "101": "France",
+      "102": "England"
     },
-    "updatedAt": "2026-07-09T12:00:00.000Z",
+    "updatedAt": "2026-07-15T12:00:00.000Z",
     "koScores": {
       "73": {
         "home": "South Africa",
@@ -2474,6 +2532,18 @@
         "away": "Switzerland",
         "h": "1",
         "a": "0"
+      },
+      "101": {
+        "home": "France",
+        "away": "Spain",
+        "h": "2",
+        "a": "1"
+      },
+      "102": {
+        "home": "England",
+        "away": "Argentina",
+        "h": "2",
+        "a": "2"
       }
     }
   },
@@ -2800,7 +2870,9 @@
       "97": "France",
       "98": "Spain",
       "99": "England",
-      "100": "Argentina"
+      "100": "Argentina",
+      "101": "France",
+      "102": "England"
     },
     "koScores": {
       "73": {
@@ -2970,8 +3042,20 @@
         "away": "Switzerland",
         "h": "2",
         "a": "1"
+      },
+      "101": {
+        "home": "France",
+        "away": "Spain",
+        "h": "3",
+        "a": "2"
+      },
+      "102": {
+        "home": "England",
+        "away": "Argentina",
+        "h": "1",
+        "a": "1"
       }
     },
-    "updatedAt": "2026-07-09T12:00:00.000Z"
+    "updatedAt": "2026-07-15T12:00:00.000Z"
   }
 ]
