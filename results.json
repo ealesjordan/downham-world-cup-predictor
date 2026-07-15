@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-07-14T22:11:25.938Z",
+  "updatedAt": "2026-07-15T22:11:46.489Z",
   "groupScores": [
     {
       "home": "Mexico",
@@ -637,6 +637,13 @@
       "h": 0,
       "a": 2,
       "round": "SF"
+    },
+    {
+      "home": "England",
+      "away": "Argentina",
+      "h": 1,
+      "a": 2,
+      "round": "SF"
     }
   ],
   "koFixtures": {
@@ -798,7 +805,13 @@
         "date": "15 Jul"
       }
     ],
-    "F": []
+    "F": [
+      {
+        "home": "Spain",
+        "away": "Argentina",
+        "date": "19 Jul"
+      }
+    ]
   },
   "qualifiedR32": [
     "Algeria",
@@ -870,7 +883,8 @@
       "Argentina"
     ],
     "SF": [
-      "Spain"
+      "Spain",
+      "Argentina"
     ],
     "F": []
   },
