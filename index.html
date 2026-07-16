@@ -1105,7 +1105,7 @@ function matchDates(R){
   var seen={}, list=[];
   MATCHES.forEach(function(m){ if(!seen[m.date]){ seen[m.date]=1; list.push(m.date); } });
   var kf = (R && R.koFixtures) || {};
-  ["R32","R16","QF","SF","F"].forEach(function(k){
+  ["R32","R16","QF","SF","3P","F"].forEach(function(k){
     (kf[k]||[]).forEach(function(f){ if(f.date && !seen[f.date]){ seen[f.date]=1; list.push(f.date); } });
   });
   return list.sort(function(a,b){ return dkey(a)-dkey(b); });
@@ -1175,7 +1175,7 @@ function koDayHtml(date, preds, R){
   var pkToNo={};
   for(var no in roundOf){ var t=abr.teams[no]; if(t&&t[0]&&t[1]) pkToNo[pairKey(t[0],t[1])]=no; }
   var ties=[];
-  ["R32","R16","QF","SF","F"].forEach(function(key){
+  ["R32","R16","QF","SF","3P","F"].forEach(function(key){
     (kf[key]||[]).forEach(function(f){
       if(f.date!==date) return;
       var n=pkToNo[pairKey(f.home,f.away)]; if(!n) return;
