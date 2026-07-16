@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-07-15T22:11:46.489Z",
+  "updatedAt": "2026-07-16T07:22:06.866Z",
   "groupScores": [
     {
       "home": "Mexico",
@@ -805,6 +805,13 @@
         "date": "15 Jul"
       }
     ],
+    "3P": [
+      {
+        "home": "France",
+        "away": "England",
+        "date": "18 Jul"
+      }
+    ],
     "F": [
       {
         "home": "Spain",
@@ -886,6 +893,7 @@
       "Spain",
       "Argentina"
     ],
+    "3P": [],
     "F": []
   },
   "champion": null,
