@@ -211,18 +211,21 @@ var LATERDEF = [
   {m:89,a:74,b:77},{m:90,a:73,b:75},{m:91,a:76,b:78},{m:92,a:79,b:80},
   {m:93,a:83,b:84},{m:94,a:81,b:82},{m:95,a:86,b:88},{m:96,a:85,b:87},
   {m:97,a:89,b:90},{m:98,a:93,b:94},{m:99,a:91,b:92},{m:100,a:95,b:96},
-  {m:101,a:97,b:98},{m:102,a:99,b:100},{m:103,a:101,b:102}
+  {m:101,a:97,b:98},{m:102,a:99,b:100},
+  {m:104,a:101,b:102,losers:true},  // third-place play-off: the two losing semi-finalists
+  {m:103,a:101,b:102}               // final
 ];
 var LATERMAP = {}; LATERDEF.forEach(function(d){ LATERMAP[d.m]=d; });
-var ALLNOS = []; for (var _i=73;_i<=103;_i++) ALLNOS.push(_i);
+var ALLNOS = []; for (var _i=73;_i<=104;_i++) ALLNOS.push(_i);
 var KO_ROUNDS = [
   { key:"R32", label:"Round of 32",   matches:[73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88] },
   { key:"R16", label:"Round of 16",   matches:[89,90,91,92,93,94,95,96] },
   { key:"QF",  label:"Quarter-finals",matches:[97,98,99,100] },
   { key:"SF",  label:"Semi-finals",   matches:[101,102] },
+  { key:"3P",  label:"Third-place play-off", matches:[104] },
   { key:"F",   label:"Final",         matches:[103] }
 ];
-var KO_TOTAL = 31;
+var KO_TOTAL = 32;
 
 function cmpTeam(x,y){ return y.pts-x.pts || y.gd-x.gd || y.gf-x.gf || x.team.localeCompare(y.team); }
 
@@ -280,8 +283,12 @@ function computeBracket(preds, winners, koOpp){
   // Correct R32 ties from the real fixtures BEFORE progression/pruning, so a
   // corrected third that actually advanced isn't pruned out of later rounds.
   if (koOpp) applyRealR32(teams, koOpp);
+  function loserOf(m){ var t=teams[m], w=winners[m]; if(!t || w==null) return null; return t[0]===w ? t[1] : (t[1]===w ? t[0] : null); }
   ALLNOS.forEach(function(no){
-    if (no>88){ var d=LATERMAP[no]; teams[no]=[ winners[d.a]||null, winners[d.b]||null ]; }
+    if (no>88){
+      var d=LATERMAP[no];
+      teams[no] = d.losers ? [ loserOf(d.a), loserOf(d.b) ] : [ winners[d.a]||null, winners[d.b]||null ];
+    }
     var w=winners[no];
     if (w!=null){ var t=teams[no]; if (!t || (t[0]!==w && t[1]!==w)) delete winners[no]; }
   });
@@ -303,16 +310,18 @@ function actualGroupPreds(R){
   return preds;
 }
 function openRounds(R){
-  var open = { R32:false, R16:false, QF:false, SF:false, F:false };
+  var open = { R32:false, R16:false, QF:false, SF:false, "3P":false, F:false };
   if(!R) return open;
   var adv = R.advancers || {}, kf = R.koFixtures || {};
   // A round opens once its qualifiers are known OR the real draw has produced at
   // least one tie for it, so people can predict decided ties without waiting for
   // the whole previous round to finish. Undecided ties show as "To be decided".
+  // The third-place play-off and final both open once the two semis are decided.
   if((R.qualifiedR32||[]).length === 32) open.R32 = true;
   if((adv.R32||[]).length === 16 || (kf.R16||[]).length) open.R16 = true;
   if((adv.R16||[]).length === 8  || (kf.QF ||[]).length) open.QF  = true;
   if((adv.QF ||[]).length === 4  || (kf.SF ||[]).length) open.SF  = true;
+  if((adv.SF ||[]).length === 2  || (kf["3P"]||[]).length) open["3P"] = true;
   if((adv.SF ||[]).length === 2  || (kf.F  ||[]).length) open.F   = true;
   return open;
 }
@@ -322,7 +331,7 @@ function actualBracket(R){
   var gp = actualGroupPreds(R);
   var koOpp = (R && R._koOppR32) || {};
   var winners = {};
-  ['R32','R16','QF','SF','F'].forEach(function(key){
+  ['R32','R16','QF','SF','3P','F'].forEach(function(key){
     var br = computeBracket(gp, winners, koOpp);
     var round = null; KO_ROUNDS.forEach(function(r){ if(r.key===key) round=r; });
     var adv = (R && R.advancers && R.advancers[key]) || [];
@@ -539,7 +548,7 @@ function waKoRoundLines(round, koScores, winners){
 }
 // scope: "all" (full list) or a knockout key (R32/R16/QF/SF/F) for a phase-only export.
 function buildWhatsApp(entry, scope){
-  var koKeys = { R32:1, R16:1, QF:1, SF:1, F:1 };
+  var koKeys = { R32:1, R16:1, QF:1, SF:1, "3P":1, F:1 };
   scope = koKeys[scope] ? scope : "all";
   var name=entry.name, category=entry.category, preds=entry.predictions||{}, winners=entry.knockout||{}, koScores=entry.koScores||{};
   var L = [];
@@ -781,6 +790,7 @@ function showPredict(){
         '<div class="tab" id="tab-R16">R16</div>' +
         '<div class="tab" id="tab-QF">QF</div>' +
         '<div class="tab" id="tab-SF">SF</div>' +
+        '<div class="tab" id="tab-3P">3rd</div>' +
         '<div class="tab" id="tab-F">Final</div>' +
       '</div>' +
       '<div id="tabcontent"></div>' +
@@ -795,10 +805,10 @@ function showPredict(){
   document.getElementById("p-save").addEventListener("click", function(){ persistNow(); });
   document.getElementById("p-share").addEventListener("click", function(){
     persistNow();
-    var koKeys = { R32:1, R16:1, QF:1, SF:1, F:1 };
+    var koKeys = { R32:1, R16:1, QF:1, SF:1, "3P":1, F:1 };
     openShare(buildWhatsApp(state, koKeys[state.tab] ? state.tab : "all"));
   });
-  ['groups','R32','R16','QF','SF','F'].forEach(function(k){
+  ['groups','R32','R16','QF','SF','3P','F'].forEach(function(k){
     document.getElementById('tab-'+k).addEventListener("click", function(){
       if (k!=='groups' && !openRounds(fileResults)[k]) return; // locked
       state.tab=k; renderTab();
@@ -812,7 +822,7 @@ function showPredict(){
 
 function renderTab(){
   var or = openRounds(fileResults);
-  ['groups','R32','R16','QF','SF','F'].forEach(function(k){
+  ['groups','R32','R16','QF','SF','3P','F'].forEach(function(k){
     var el = document.getElementById('tab-'+k); if(!el) return;
     var locked = (k!=='groups' && !or[k]);
     el.className = 'tab' + (state.tab===k?' on':'') + (locked?' lock':'');
@@ -821,7 +831,7 @@ function renderTab(){
   else renderRoundTab(state.tab);
   var shareBtn = document.getElementById("p-share");
   if (shareBtn){
-    var KO_LABEL = { R32:"R32", R16:"R16", QF:"QF", SF:"SF", F:"Final" };
+    var KO_LABEL = { R32:"R32", R16:"R16", QF:"QF", SF:"SF", "3P":"3rd-place", F:"Final" };
     shareBtn.textContent = KO_LABEL[state.tab] ? ("📤 Send " + KO_LABEL[state.tab] + " to WhatsApp") : "📤 Send via WhatsApp";
   }
   updateProgress();
@@ -881,6 +891,7 @@ var ROUND_LOCK_MSG = {
   R16: { head:"Round of 16 isn’t open yet", body:"Once every Round of 32 tie is decided, the eight surviving matchups will appear here." },
   QF:  { head:"Quarter-finals aren’t open yet", body:"Once the Round of 16 is finished, the four quarter-final ties will appear here." },
   SF:  { head:"Semi-finals aren’t open yet", body:"Once the quarters are done, the two semi-finals will appear here." },
+  "3P": { head:"Third-place play-off isn’t open yet", body:"Once the semi-finals are decided, the two losing semi-finalists will appear here." },
   F:   { head:"Final isn’t open yet", body:"Once the semi-finals are decided, the Final will appear here for your champion pick." }
 };
 function renderRoundTab(key){
@@ -920,6 +931,7 @@ function renderRoundTab(key){
     var t = br.teams[no] || [null,null];
     var sa = "", sb = "";
     if (no<=88){ sa=seedLabel(defByNo[no].a); sb=seedLabel(defByNo[no].b); }
+    else if (LATERMAP[no].losers){ sa="Loser M"+LATERMAP[no].a; sb="Loser M"+LATERMAP[no].b; }
     else { sa="W"+LATERMAP[no].a; sb="W"+LATERMAP[no].b; }
     if (!t[0] || !t[1]){
       html += '<div class="ko-match" style="padding:11px 13px;"><div class="ko-mno" style="padding:0 0 6px;">Match '+no+'</div><div class="muted" style="font-size:13px;font-style:italic;">To be decided</div></div>';

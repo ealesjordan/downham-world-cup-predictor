@@ -176,8 +176,8 @@ function run() {
   return fetchEvents().then(events => {
     const groupScores = [];
     const koScores = [];
-    const koFixtures = { R32: [], R16: [], QF: [], SF: [], F: [] };
-    const advancers = { R32: [], R16: [], QF: [], SF: [], F: [] };
+    const koFixtures = { R32: [], R16: [], QF: [], SF: [], "3P": [], F: [] };
+    const advancers = { R32: [], R16: [], QF: [], SF: [], "3P": [], F: [] };
     let champion = null;
 
     // Collect knockout candidates (non-group, real teams). We assign their round
@@ -211,14 +211,15 @@ function run() {
       }
     });
 
-    // Rounds in chronological order with their bracket sizes (3rd-place playoff
-    // sits between the semis and the final; we don't track it).
+    // Rounds in chronological order with their bracket sizes. The third-place
+    // play-off is played just before the final, so it slots in between the semis
+    // and the final when sorted by kick-off time.
     const ROUND_SEQ = [["R32",16],["R16",8],["QF",4],["SF",2],["3P",1],["F",1]];
     koCands.sort((a, b) => a.t - b.t);
     koCands.forEach((c, i) => {
       let round = null, acc = 0;
       for (const [r, n] of ROUND_SEQ) { if (i < acc + n) { round = r; break; } acc += n; }
-      if (!round || round === "3P" || !koFixtures[round]) return;
+      if (!round || !koFixtures[round]) return;
       koFixtures[round].push({ home: c.home, away: c.away, date: c.date });
       if (c.finished) {
         const nm = ninetyMinuteScore(c.comp, c.homeC, c.awayC);
