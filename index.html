@@ -556,10 +556,12 @@ function buildWhatsApp(entry, scope){
   L.push("Entry: *" + name + "*" + (category==="Under 12" ? "  _(Under-12s)_" : ""));
 
   if (scope !== "all"){
-    var round = null; KO_ROUNDS.forEach(function(r){ if(r.key===scope) round=r; });
-    L.push(""); L.push("*" + round.label + " predictions — score after 90 mins*");
-    var lines = waKoRoundLines(round, koScores, winners);
-    if (lines.length) lines.forEach(function(x){ L.push(x); }); else L.push("_None predicted yet_");
+    // The Final tab combines the final and the third-place play-off.
+    tabRounds(scope).forEach(function(round){
+      L.push(""); L.push("*" + round.label + " predictions — score after 90 mins*");
+      var lines = waKoRoundLines(round, koScores, winners);
+      if (lines.length) lines.forEach(function(x){ L.push(x); }); else L.push("_None predicted yet_");
+    });
     if (scope === "F" && winners[103]){ L.push(""); L.push("🏆 *Champion: " + winners[103] + "*"); }
     return L.join("\n");
   }
@@ -790,7 +792,6 @@ function showPredict(){
         '<div class="tab" id="tab-R16">R16</div>' +
         '<div class="tab" id="tab-QF">QF</div>' +
         '<div class="tab" id="tab-SF">SF</div>' +
-        '<div class="tab" id="tab-3P">3rd</div>' +
         '<div class="tab" id="tab-F">Final</div>' +
       '</div>' +
       '<div id="tabcontent"></div>' +
@@ -808,7 +809,7 @@ function showPredict(){
     var koKeys = { R32:1, R16:1, QF:1, SF:1, "3P":1, F:1 };
     openShare(buildWhatsApp(state, koKeys[state.tab] ? state.tab : "all"));
   });
-  ['groups','R32','R16','QF','SF','3P','F'].forEach(function(k){
+  ['groups','R32','R16','QF','SF','F'].forEach(function(k){
     document.getElementById('tab-'+k).addEventListener("click", function(){
       if (k!=='groups' && !openRounds(fileResults)[k]) return; // locked
       state.tab=k; renderTab();
@@ -822,7 +823,7 @@ function showPredict(){
 
 function renderTab(){
   var or = openRounds(fileResults);
-  ['groups','R32','R16','QF','SF','3P','F'].forEach(function(k){
+  ['groups','R32','R16','QF','SF','F'].forEach(function(k){
     var el = document.getElementById('tab-'+k); if(!el) return;
     var locked = (k!=='groups' && !or[k]);
     el.className = 'tab' + (state.tab===k?' on':'') + (locked?' lock':'');
@@ -831,7 +832,7 @@ function renderTab(){
   else renderRoundTab(state.tab);
   var shareBtn = document.getElementById("p-share");
   if (shareBtn){
-    var KO_LABEL = { R32:"R32", R16:"R16", QF:"QF", SF:"SF", "3P":"3rd-place", F:"Final" };
+    var KO_LABEL = { R32:"R32", R16:"R16", QF:"QF", SF:"SF", F:"Final &amp; 3rd" };
     shareBtn.textContent = KO_LABEL[state.tab] ? ("📤 Send " + KO_LABEL[state.tab] + " to WhatsApp") : "📤 Send via WhatsApp";
   }
   updateProgress();
@@ -912,12 +913,13 @@ function renderRoundTab(key){
 
   var br = actualBracket(fileResults);
   var defByNo = {}; R32DEF.forEach(function(d){ defByNo[d.m]=d; });
-  var round = null; KO_ROUNDS.forEach(function(r){ if(r.key===key) round=r; });
-  var picked = 0; round.matches.forEach(function(no){ if(koDecided(no)) picked++; });
+  var rounds = tabRounds(key);                       // Final tab shows the final + 3rd-place play-off
+  var allNos = []; rounds.forEach(function(r){ r.matches.forEach(function(no){ allNos.push(no); }); });
+  var picked = allNos.filter(function(no){ return koDecided(no); }).length;
 
   var html = '<div style="border:1px solid #ddd2b8;border-top:none;border-radius:0 0 10px 10px;padding:14px;background:rgba(255,255,255,.4);">';
-  html += '<p style="font-size:13px;line-height:1.5;"><strong>'+esc(round.label)+'.</strong> Predict the score after 90 minutes. If it’s a draw, also pick who goes through (extra time / penalties). These are the actual teams left in the tournament.</p>';
-  html += '<div id="kopicks" style="font-size:12px;font-weight:700;color:#6b5e44;margin-top:10px;">'+picked+' of '+round.matches.length+' decided</div>';
+  html += '<p style="font-size:13px;line-height:1.5;">Predict the score after 90 minutes. If it’s a draw, also pick who goes through (extra time / penalties). These are the actual teams left in the tournament.</p>';
+  html += '<div id="kopicks" style="font-size:12px;font-weight:700;color:#6b5e44;margin-top:10px;">'+picked+' of '+allNos.length+' decided</div>';
 
   if (key==="F"){
     var champ = state.knockout[103];
@@ -926,32 +928,44 @@ function renderRoundTab(key){
     }
   }
 
-  html += '<div class="koround">';
-  round.matches.forEach(function(no){
-    var t = br.teams[no] || [null,null];
-    var sa = "", sb = "";
-    if (no<=88){ sa=seedLabel(defByNo[no].a); sb=seedLabel(defByNo[no].b); }
-    else if (LATERMAP[no].losers){ sa="Loser M"+LATERMAP[no].a; sb="Loser M"+LATERMAP[no].b; }
-    else { sa="W"+LATERMAP[no].a; sb="W"+LATERMAP[no].b; }
-    if (!t[0] || !t[1]){
-      html += '<div class="ko-match" style="padding:11px 13px;"><div class="ko-mno" style="padding:0 0 6px;">Match '+no+'</div><div class="muted" style="font-size:13px;font-style:italic;">To be decided</div></div>';
-      return;
-    }
-    var s = state.koScores[no] || {h:"",a:""};
-    html += '<div class="ko-match" style="padding:11px 13px;">' +
-      '<div class="ko-mno" style="padding:0 0 7px;">Match '+no+' · '+esc(sa)+' v '+esc(sb)+'</div>' +
-      '<div class="flex ac g8">' +
-        '<div class="team home">'+esc(t[0])+' <span class="flag">'+(FLAGS[t[0]]||"")+'</span></div>' +
-        '<input class="scorebox koscore'+(s.h!==""?" filled":"")+'" inputmode="numeric" data-no="'+no+'" data-side="h" data-home="'+esc(t[0])+'" data-away="'+esc(t[1])+'" value="'+esc(s.h)+'" aria-label="'+esc(t[0])+' score">' +
-        '<span class="dash">–</span>' +
-        '<input class="scorebox koscore'+(s.a!==""?" filled":"")+'" inputmode="numeric" data-no="'+no+'" data-side="a" data-home="'+esc(t[0])+'" data-away="'+esc(t[1])+'" value="'+esc(s.a)+'" aria-label="'+esc(t[1])+' score">' +
-        '<div class="team away"><span class="flag">'+(FLAGS[t[1]]||"")+'</span> '+esc(t[1])+'</div>' +
-      '</div>' +
-      '<div id="ko-adv-'+no+'" class="ko-adv" style="margin-top:8px;">'+koAdvHtml(no, t[0], t[1])+'</div>' +
-    '</div>';
+  rounds.forEach(function(round){
+    if (rounds.length > 1) html += '<div class="rh" style="font-family:\'Anton\',sans-serif;font-size:15px;color:var(--red);letter-spacing:.03em;margin-top:16px;text-transform:uppercase;">'+esc(round.label)+'</div>';
+    html += '<div class="koround"'+(rounds.length>1?' style="margin-top:8px;"':'')+'>';
+    round.matches.forEach(function(no){ html += koMatchCardHtml(no, br, defByNo); });
+    html += '</div>';
   });
-  html += '</div></div>';
+  html += '</div>';
   tc.innerHTML = html;
+}
+// Rounds shown on a given tab. The Final tab combines the final and the
+// third-place play-off; every other tab shows just its own round.
+function tabRounds(key){
+  var out = [];
+  KO_ROUNDS.forEach(function(r){ if(r.key===key) out.push(r); });
+  if (key==="F") KO_ROUNDS.forEach(function(r){ if(r.key==="3P") out.push(r); });
+  return out;
+}
+function koMatchCardHtml(no, br, defByNo){
+  var t = br.teams[no] || [null,null];
+  var sa = "", sb = "";
+  if (no<=88){ sa=seedLabel(defByNo[no].a); sb=seedLabel(defByNo[no].b); }
+  else if (LATERMAP[no].losers){ sa="Loser M"+LATERMAP[no].a; sb="Loser M"+LATERMAP[no].b; }
+  else { sa="W"+LATERMAP[no].a; sb="W"+LATERMAP[no].b; }
+  if (!t[0] || !t[1]){
+    return '<div class="ko-match" style="padding:11px 13px;"><div class="ko-mno" style="padding:0 0 6px;">Match '+no+'</div><div class="muted" style="font-size:13px;font-style:italic;">To be decided</div></div>';
+  }
+  var s = state.koScores[no] || {h:"",a:""};
+  return '<div class="ko-match" style="padding:11px 13px;">' +
+    '<div class="ko-mno" style="padding:0 0 7px;">Match '+no+' · '+esc(sa)+' v '+esc(sb)+'</div>' +
+    '<div class="flex ac g8">' +
+      '<div class="team home">'+esc(t[0])+' <span class="flag">'+(FLAGS[t[0]]||"")+'</span></div>' +
+      '<input class="scorebox koscore'+(s.h!==""?" filled":"")+'" inputmode="numeric" data-no="'+no+'" data-side="h" data-home="'+esc(t[0])+'" data-away="'+esc(t[1])+'" value="'+esc(s.h)+'" aria-label="'+esc(t[0])+' score">' +
+      '<span class="dash">–</span>' +
+      '<input class="scorebox koscore'+(s.a!==""?" filled":"")+'" inputmode="numeric" data-no="'+no+'" data-side="a" data-home="'+esc(t[0])+'" data-away="'+esc(t[1])+'" value="'+esc(s.a)+'" aria-label="'+esc(t[1])+' score">' +
+      '<div class="team away"><span class="flag">'+(FLAGS[t[1]]||"")+'</span> '+esc(t[1])+'</div>' +
+    '</div>' +
+    '<div id="ko-adv-'+no+'" class="ko-adv" style="margin-top:8px;">'+koAdvHtml(no, t[0], t[1])+'</div>' +
+  '</div>';
 }
 function koAdvHtml(no, teamA, teamB){
   var s = state.koScores[no];
@@ -979,10 +993,10 @@ function koReconcile(no){
   else if (state.knockout[no]!==s.home && state.knockout[no]!==s.away) delete state.knockout[no];
 }
 function updateKoPicked(){
-  var round=null; KO_ROUNDS.forEach(function(r){ if(r.key===state.tab) round=r; });
-  if(!round) return;
-  var picked=0; round.matches.forEach(function(no){ if(koDecided(no)) picked++; });
-  var el=document.getElementById("kopicks"); if(el) el.textContent = picked+" of "+round.matches.length+" decided";
+  var nos=[]; tabRounds(state.tab).forEach(function(r){ r.matches.forEach(function(no){ nos.push(no); }); });
+  if(!nos.length) return;
+  var picked=nos.filter(function(no){ return koDecided(no); }).length;
+  var el=document.getElementById("kopicks"); if(el) el.textContent = picked+" of "+nos.length+" decided";
 }
 function koScoreInput(e){
   var el=e.target; if(!el.classList || !el.classList.contains("koscore")) return;
