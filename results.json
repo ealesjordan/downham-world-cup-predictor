@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-07-19T07:35:32.218Z",
+  "updatedAt": "2026-07-19T22:08:00.213Z",
   "groupScores": [
     {
       "home": "Mexico",
@@ -651,6 +651,13 @@
       "h": 4,
       "a": 6,
       "round": "3P"
+    },
+    {
+      "home": "Spain",
+      "away": "Argentina",
+      "h": 0,
+      "a": 0,
+      "round": "F"
     }
   ],
   "koFixtures": {
@@ -903,8 +910,10 @@
     "3P": [
       "England"
     ],
-    "F": []
+    "F": [
+      "Spain"
+    ]
   },
-  "champion": null,
+  "champion": "Spain",
   "topScorers": []
 }
