@@ -915,5 +915,10 @@
     ]
   },
   "champion": "Spain",
-  "topScorers": []
+  "topScorers": [
+    {
+      "name": "Kylian Mbappé",
+      "goals": 8
+    }
+  ]
 }
